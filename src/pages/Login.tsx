@@ -1,5 +1,5 @@
 import { memo } from "react";
 
 export const Login = memo(() => {
-  return <p>login</p>;
+  return <p>あいううえお</p>;
 });
