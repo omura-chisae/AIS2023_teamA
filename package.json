@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
+    "@react-navigation/native": "^6.1.8",
     "expo": "~49.0.13",
     "expo-status-bar": "~1.6.0",
     "firebase": "^10.5.0",
