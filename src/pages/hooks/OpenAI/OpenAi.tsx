@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import { View, Text, Button } from 'react-native';
 //initialをインポート
 import initial from './prompts';
-//axiosをインポート
-import axios from 'axios';
+
 
 
 
