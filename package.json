@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
+    "axios": "^1.5.1",
     "expo": "~49.0.13",
     "expo-status-bar": "~1.6.0",
     "openai": "^4.12.4",
