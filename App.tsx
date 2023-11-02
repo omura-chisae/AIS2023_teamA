@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import AuthContext from "./src/AuthContext";
+import { BottomTab } from "./src/pages/BottomTab";
 
 
 type UserType = User | null;
