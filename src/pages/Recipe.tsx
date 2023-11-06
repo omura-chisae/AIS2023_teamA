@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { BottomTab } from "./BottomTab";
 
 export const Recipe = memo(() => {
   return <p> レシピ提案ボタンが押された時、表示されるページです。
@@ -30,6 +31,8 @@ export const Recipe = memo(() => {
   7. お好みで唐辛子を加えてさらに煮込みます。
   8. 器に盛り付けて完成です。
   
-  このレシピでジャガイモと豚肉の中華風スープを楽しんでください。</p>;
+  このレシピでジャガイモと豚肉の中華風スープを楽しんでください。
+  <BottomTab/>
+  </p>;
 
 });
