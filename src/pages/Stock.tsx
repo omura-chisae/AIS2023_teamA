@@ -1,5 +1,5 @@
 import React, { useState, memo } from 'react';
-import { Modal, Portal, Provider, Appbar, Searchbar, Dialog, TouchableRipple, Button } from 'react-native-paper';
+import { TextInput, Modal, Portal, Provider, Appbar, Searchbar, Dialog, TouchableRipple, Button } from 'react-native-paper';
 import { View, Text, StyleSheet } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 
