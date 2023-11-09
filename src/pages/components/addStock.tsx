@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { List, Checkbox, TextInput } from "react-native-paper";
 
-const MyComponent = () => {
+const addStock = () => {
   const initialItems = [
     { id: 1, title: "肉", checked: false },
     { id: 2, title: "野菜", checked: false },
-    // 他のアイテムを追加できます
   ];
 
   const [items, setItems] = useState(initialItems);
@@ -52,4 +51,4 @@ const MyComponent = () => {
   );
 };
 
-export default MyComponent;
+export default addStock;
