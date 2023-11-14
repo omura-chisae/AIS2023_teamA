@@ -1,6 +1,7 @@
 import { memo } from "react";
+import {Text} from 'react-native'
 
 export const Settings = memo(() => {
-  return <p>設定画面です。</p>;
+  return <Text>設定画面です。</Text>;
 
 });
