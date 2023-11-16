@@ -74,7 +74,7 @@ export const Stock = memo(() => {
           onDismiss={hideModal}
           contentContainerStyle={styles.containerStyle}
         >
-          <AddUpdateStock />
+          <AddUpdateStock hideModal={hideModal} />
           <Button onPress={hideModal}>Done</Button>
         </Modal>
         <Dialog visible={dialogVisible} onDismiss={hideItemDialog}>
