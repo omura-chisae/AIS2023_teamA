@@ -34,7 +34,13 @@ const addIngredient = (
   }
 };
 
-export const AddUpdateStock = () => {
+type addUpdateStockProps = {
+  hideModal: () => void;
+};
+
+export const AddUpdateStock: React.FC<addUpdateStockProps> = (props) => {
+  const { hideModal } = props;
+
   // AddStock
   const [ingredientName, setIngredientName] = useState("");
   const changeIngredientName = (ingredientName: string) => {
@@ -83,9 +89,10 @@ export const AddUpdateStock = () => {
       />
       <Button
         mode="contained"
-        onPress={() =>
-          addIngredient(ingredientName, categoryLists, date, quantity)
-        }
+        onPress={() => {
+          // addIngredient(ingredientName, categoryLists, date, quantity);
+          hideModal();
+        }}
       >
         追加
       </Button>
