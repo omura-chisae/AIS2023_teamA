@@ -2,9 +2,15 @@ import React, { useState } from "react";
 import { Calendar } from "react-native-calendars";
 import { PaperProvider, Text, Button, Modal } from "react-native-paper";
 
-const ShowDate = () => {
+type DateProps = {
+  changeDate: (date: Date) => void;
+  date: Date;
+};
+
+const ShowDate: React.FC<DateProps> = (props) => {
+  const { changeDate, date } = props;
+
   const [showCalendar, setShowCalendar] = useState(false);
-  const [date, setDate] = useState("");
 
   return (
     <PaperProvider>
@@ -17,10 +23,9 @@ const ShowDate = () => {
           <Calendar
             monthFormat={"yyyy年 MM月"}
             onDayPress={(day) => {
-              setDate(day.dateString);
+              changeDate(new Date(day.dateString));
             }}
           />
-          {date && <Text>選択された日付: {date}</Text>}
         </>
       )}
     </PaperProvider>

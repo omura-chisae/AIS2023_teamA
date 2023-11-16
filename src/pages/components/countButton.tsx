@@ -1,25 +1,40 @@
 import { Button } from "react-native-paper";
-import { useState } from "react";
-import { Text } from "react-native";
+import React, { useState } from "react";
+import { Text, StyleSheet, View } from "react-native";
 
-const countButton = () => {
-  const [count, setCount] = useState(0);
+type CountButtonProps = {
+  quantity: number;
+  countUp: () => void;
+  countDown: () => void;
+};
+
+const countButton: React.FC<CountButtonProps> = (props) => {
+  const { quantity, countUp, countDown } = props;
   return (
-    <>
-      <Button
-        mode="contained"
-        onPress={() => {
-          count >= 1 && setCount(count - 1);
-        }}
-      >
+    <View style={styles.container}>
+      <Button mode="contained" onPress={countDown}>
         ー
       </Button>
-      <Text>{count}</Text>
-      <Button mode="contained" onPress={() => setCount(count + 1)}>
+      <Text style={styles.Text}>{quantity}</Text>
+      <Button mode="contained" onPress={countUp}>
         ＋
       </Button>
-    </>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row", // ボタンの配置を横並びにする
+    justifyContent: "center",
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  Text: {
+    fontSize: 20,
+    marginRight: 10,
+    marginLeft: 10,
+  },
+});
 
 export default countButton;
