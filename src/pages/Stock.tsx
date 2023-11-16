@@ -1,18 +1,30 @@
-import React, { useState, memo } from 'react';
-import { TextInput, Modal, Portal, Provider, Appbar, Searchbar, Dialog, TouchableRipple, Button } from 'react-native-paper';
-import { View, Text, StyleSheet } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
+import { useState, memo } from "react";
+import {
+  TextInput,
+  Modal,
+  Portal,
+  Provider,
+  Appbar,
+  Searchbar,
+  Dialog,
+  TouchableRipple,
+  Button,
+} from "react-native-paper";
+import { View, Text, StyleSheet } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
+
+import { AddUpdateStock } from "./AddUpdateStock";
 
 export const Stock = memo(() => {
   const [visible, setVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [isSearchBarVisible, setSearchBarVisible] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState('');
+  const [selectedItem, setSelectedItem] = useState("");
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
-  const showItemDialog = (item:string) => {
+  const showItemDialog = (item: string) => {
     setSelectedItem(item);
     setDialogVisible(true);
   };
@@ -22,11 +34,11 @@ export const Stock = memo(() => {
   const closeSearchBar = () => setSearchBarVisible(false);
 
   const categories = [
-    { label: 'カテゴリ1', value: 'category1' },
-    { label: 'カテゴリ2', value: 'category2' },
+    { label: "カテゴリ1", value: "category1" },
+    { label: "カテゴリ2", value: "category2" },
   ];
 
-  const foodItems = ['たまねぎ', 'にんじん', 'ネギ']; // 食品リスト
+  const foodItems = ["たまねぎ", "にんじん", "ネギ"]; // 食品リスト
 
   return (
     <Provider>
@@ -44,12 +56,12 @@ export const Stock = memo(() => {
           <>
             <Appbar.Action icon="plus" onPress={showModal} />
             <Appbar.Action icon="magnify" onPress={openSearchBar} />
-            <View style={{ flex: 1, justifyContent: 'center' }}>
+            <View style={{ flex: 1, justifyContent: "center" }}>
               <RNPickerSelect
                 onValueChange={(value) => setSelectedCategory(value)}
                 items={categories}
                 style={pickerSelectStyles}
-                placeholder={{ label: 'カテゴリを選択...', value: null }}
+                placeholder={{ label: "カテゴリを選択...", value: null }}
                 value={selectedCategory}
               />
             </View>
@@ -57,8 +69,12 @@ export const Stock = memo(() => {
         )}
       </Appbar.Header>
       <Portal>
-      <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.containerStyle}>
-          <Text>青柳さんが作成したページの表示</Text>
+        <Modal
+          visible={visible}
+          onDismiss={hideModal}
+          contentContainerStyle={styles.containerStyle}
+        >
+          <AddUpdateStock />
           <Button onPress={hideModal}>Done</Button>
         </Modal>
         <Dialog visible={dialogVisible} onDismiss={hideItemDialog}>
@@ -90,10 +106,10 @@ export const Stock = memo(() => {
 //全体のスタイル
 const styles = StyleSheet.create({
   containerStyle: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 20,
-    width: '80%',
-    alignSelf: 'center',
+    width: "80%",
+    alignSelf: "center",
   },
   container: {
     padding: 20,
@@ -101,8 +117,8 @@ const styles = StyleSheet.create({
   ripple: {
     padding: 8,
     borderBottomWidth: 1,
-    borderBottomColor: 'grey',
-    overflow: 'hidden',
+    borderBottomColor: "grey",
+    overflow: "hidden",
   },
   itemText: {
     fontSize: 18,
@@ -119,9 +135,9 @@ const pickerSelectStyles = {
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderRadius: 4,
-    color: 'black',
+    color: "black",
     paddingRight: 30,
   },
   inputAndroid: {
@@ -129,12 +145,11 @@ const pickerSelectStyles = {
     paddingHorizontal: 10,
     paddingVertical: 8,
     borderWidth: 0.5,
-    borderColor: 'purple',
+    borderColor: "purple",
     borderRadius: 8,
-    color: 'black',
+    color: "black",
     paddingRight: 30,
   },
 };
-
 
 export default Stock;
