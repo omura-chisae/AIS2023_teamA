@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { Button } from "react-native-paper";
 
 import AddStock from "./components/addStock";
 import ShowDate from "./components/showDate";
@@ -8,7 +8,7 @@ import CountButton from "./components/countButton";
 import { itemProps } from "./components/addStock";
 
 import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 
 const addIngredient = (
   name: string,
@@ -19,14 +19,19 @@ const addIngredient = (
   const checkedCategories = categoryLists
     .filter((item) => item.checked === true)
     .map(({ id, title }) => ({ id, title })); // checkを付けたカテゴリを取り出す
-  console.log(date);
 
-  addDoc(collection(db, "ingredients"), {
-    ingredientName: name,
-    categories: checkedCategories,
-    expiryDate: date,
-    quantity: quantity,
-  });
+  const user = auth.currentUser;
+  if (user) {
+    const userId = user.uid;
+
+    addDoc(collection(db, "ingredients"), {
+      userId: userId,
+      ingredientName: name,
+      categories: checkedCategories,
+      expiryDate: date,
+      quantity: quantity,
+    });
+  }
 };
 
 export const AddUpdateStock = () => {
@@ -84,11 +89,6 @@ export const AddUpdateStock = () => {
       >
         追加
       </Button>
-      <Text>
-        {ingredientName}
-        {categoryLists.length > 0 ? categoryLists[0].title : ""}
-        {quantity}
-      </Text>
     </View>
   );
 };
