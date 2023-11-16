@@ -2,6 +2,7 @@ import React, { useState, memo } from 'react';
 import { TextInput, Modal, Portal, Provider, Appbar, Searchbar, Dialog, TouchableRipple, Button } from 'react-native-paper';
 import { View, Text, StyleSheet } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
+import AddStock from './components/AddStock';
 
 export const Stock = memo(() => {
   const [visible, setVisible] = useState(false);
@@ -58,8 +59,9 @@ export const Stock = memo(() => {
       </Appbar.Header>
       <Portal>
       <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.containerStyle}>
-          <Text>青柳さんが作成したページの表示</Text>
-          <Button onPress={hideModal}>Done</Button>
+        <AddStock />
+          {/* <Text>青柳さんが作成したページの表示</Text>
+          <Button onPress={hideModal}>Done</Button> */}
         </Modal>
         <Dialog visible={dialogVisible} onDismiss={hideItemDialog}>
           <Dialog.Title>{selectedItem}</Dialog.Title>

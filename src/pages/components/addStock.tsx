@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { List, Checkbox, TextInput } from "react-native-paper";
 
-const addStock = () => {
+const AddStock = () => {
   const initialItems = [
     { id: 1, title: "肉", checked: false },
     { id: 2, title: "野菜", checked: false },
@@ -51,4 +51,4 @@ const addStock = () => {
   );
 };
 
-export default addStock;
+export default AddStock;
