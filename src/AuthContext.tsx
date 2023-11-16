@@ -8,6 +8,7 @@ import { db } from "./firebase";
 import Auth from "./pages/Auth";
 import { AdminPage } from "./pages/AdminPage";
 import { UserPage } from "./pages/UserPage";
+import { Recipe } from "./pages/Recipe";
 
 type AuthContextProps = {
   user: User | null;
@@ -37,6 +38,7 @@ const AuthContext: React.FC<AuthContextProps> = ({ user }) => {
         <Stack.Screen name="Auth" component={Auth} />
         <Stack.Screen name="UserPage" component={UserPage} />
         <Stack.Screen name="Admin" component={AdminPage} />
+        <Stack.Screen name="Recipe" component={Recipe} />
       </Stack.Navigator>
   );
 };
