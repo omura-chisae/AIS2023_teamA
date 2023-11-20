@@ -17,8 +17,8 @@ const addIngredient = (
   quantity: number
 ) => {
   const checkedCategories = categoryLists
-    .filter((item) => item.checked === true)
-    .map(({ id, title }) => ({ id, title })); // checkを付けたカテゴリを取り出す
+    .filter((item) => item.checked === true) // checkを付けたカテゴリを取り出す
+    .map(({ id, title }) => ({ id, title })); // checkedを削除
 
   const user = auth.currentUser;
   if (user) {
@@ -41,16 +41,16 @@ type addUpdateStockProps = {
 export const AddUpdateStock: React.FC<addUpdateStockProps> = (props) => {
   const { hideModal } = props;
 
+  const categories = [
+    { id: 1, title: "肉", checked: false },
+    { id: 2, title: "野菜", checked: false },
+  ];
+
   // AddStock
   const [ingredientName, setIngredientName] = useState("");
   const changeIngredientName = (ingredientName: string) => {
     setIngredientName(ingredientName);
   };
-
-  const categories = [
-    { id: 1, title: "肉", checked: false },
-    { id: 2, title: "野菜", checked: false },
-  ];
 
   const [categoryLists, setCategoryLists] = useState<itemProps[]>(categories);
   const handleCheckboxToggle = (
@@ -63,7 +63,7 @@ export const AddUpdateStock: React.FC<addUpdateStockProps> = (props) => {
     setCategoryLists(updatedItems);
   };
 
-  // Date
+  // setDate
   const [date, setDate] = useState<Date>(new Date());
   const changeDate = (date: Date) => {
     setDate(date);
