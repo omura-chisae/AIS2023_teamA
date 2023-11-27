@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, memo, useCallback } from "react";
 import { View } from "react-native";
 import { Button } from "react-native-paper";
 
@@ -9,7 +9,9 @@ import { itemProps } from "./components/addStock";
 
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { db, auth } from "../firebase";
+import { useCategories } from "./components/useCategories";
 
+// Firestoreに食材データを追加
 const addIngredient = (
   name: string,
   categoryLists: itemProps[],
@@ -18,7 +20,7 @@ const addIngredient = (
 ) => {
   const checkedCategories = categoryLists
     .filter((item) => item.checked === true) // checkを付けたカテゴリを取り出す
-    .map(({ id, title }) => ({ id, title })); // checkedを削除
+    .map(({ id }) => ({ id })); // checkedとtitleを削除
 
   const user = auth.currentUser;
   if (user) {
@@ -36,25 +38,28 @@ const addIngredient = (
 
 type addUpdateStockProps = {
   hideModal: () => void;
+  addIngredientCategory: itemProps[];
 };
 
-export const AddUpdateStock: React.FC<addUpdateStockProps> = (props) => {
-  const { hideModal } = props;
+export const AddUpdateStock: React.FC<addUpdateStockProps> = memo((props) => {
+  const { hideModal, addIngredientCategory } = props;
 
-  const categories = [
-    { id: 1, title: "肉", checked: false },
-    { id: 2, title: "野菜", checked: false },
-  ];
+  // const categories = [
+  //   { id: "1", title: "肉", checked: false },
+  //   { id: "2", title: "野菜", checked: false },
+  // ];
 
   // AddStock
   const [ingredientName, setIngredientName] = useState("");
-  const changeIngredientName = (ingredientName: string) => {
+  const changeIngredientName = useCallback((ingredientName: string) => {
     setIngredientName(ingredientName);
-  };
+  }, []);
+  const [categoryLists, setCategoryLists] = useState<itemProps[]>([]);
 
-  const [categoryLists, setCategoryLists] = useState<itemProps[]>(categories);
+  useEffect(() => setCategoryLists(addIngredientCategory), []);
+
   const handleCheckboxToggle = (
-    itemId: Number,
+    itemId: string,
     categoryLists: Array<itemProps>
   ) => {
     const updatedItems = categoryLists.map((item: itemProps) =>
@@ -65,14 +70,21 @@ export const AddUpdateStock: React.FC<addUpdateStockProps> = (props) => {
 
   // setDate
   const [date, setDate] = useState<Date>(new Date());
-  const changeDate = (date: Date) => {
+  const changeDate = useCallback((date: Date) => {
     setDate(date);
-  };
+  }, []);
 
   // CountButton
   const [quantity, setQuantity] = useState(0);
-  const countUp = () => setQuantity(quantity + 1);
-  const countDown = () => quantity >= 1 && setQuantity(quantity - 1);
+  const countUp = useCallback(
+    () => setQuantity((prevQuantity) => prevQuantity + 1),
+    []
+  );
+  const countDown = useCallback(
+    () =>
+      setQuantity((prevQuantity) => (prevQuantity >= 1 ? prevQuantity - 1 : 0)),
+    []
+  );
 
   return (
     <View>
@@ -90,7 +102,7 @@ export const AddUpdateStock: React.FC<addUpdateStockProps> = (props) => {
       <Button
         mode="contained"
         onPress={() => {
-          // addIngredient(ingredientName, categoryLists, date, quantity);
+          addIngredient(ingredientName, categoryLists, date, quantity);
           hideModal();
         }}
       >
@@ -98,4 +110,4 @@ export const AddUpdateStock: React.FC<addUpdateStockProps> = (props) => {
       </Button>
     </View>
   );
-};
+});
