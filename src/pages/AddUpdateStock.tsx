@@ -36,10 +36,18 @@ const addIngredient = (
 
 type addUpdateStockProps = {
   hideModal: () => void;
+  onAdd: () => void;
 };
 
+
 export const AddUpdateStock: React.FC<addUpdateStockProps> = (props) => {
-  const { hideModal } = props;
+  const { hideModal, onAdd } = props;
+
+  const handleAddClick = async () => {
+    await addIngredient(ingredientName, categoryLists, date, quantity);
+    hideModal();
+    onAdd(); // 新しい食材が追加された後にリストを更新
+  };
 
   // AddStock
   const [ingredientName, setIngredientName] = useState("");
@@ -89,10 +97,7 @@ export const AddUpdateStock: React.FC<addUpdateStockProps> = (props) => {
       />
       <Button
         mode="contained"
-        onPress={() => {
-          // addIngredient(ingredientName, categoryLists, date, quantity);
-          hideModal();
-        }}
+        onPress={handleAddClick} 
       >
         追加
       </Button>

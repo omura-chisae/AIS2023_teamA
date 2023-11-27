@@ -1,6 +1,10 @@
 import { Button } from "react-native-paper";
 import React, { useState } from "react";
-import { Text, StyleSheet, View } from "react-native";
+import { Text, View } from "react-native";
+
+import styles from "../style/Styles";
+
+
 
 type CountButtonProps = {
   quantity: number;
@@ -11,30 +15,16 @@ type CountButtonProps = {
 const countButton: React.FC<CountButtonProps> = (props) => {
   const { quantity, countUp, countDown } = props;
   return (
-    <View style={styles.container}>
+    <View style={styles.countButtonContainer}>
       <Button mode="contained" onPress={countDown}>
         ー
       </Button>
-      <Text style={styles.Text}>{quantity}</Text>
+      <Text style={styles.countButtonText}>{quantity}</Text>
       <Button mode="contained" onPress={countUp}>
         ＋
       </Button>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row", // ボタンの配置を横並びにする
-    justifyContent: "center",
-    paddingTop: 10,
-    paddingBottom: 10,
-  },
-  Text: {
-    fontSize: 20,
-    marginRight: 10,
-    marginLeft: 10,
-  },
-});
 
 export default countButton;
