@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { Calendar } from "react-native-calendars";
 import { Text, Button, Modal } from "react-native-paper";
 
@@ -7,7 +7,7 @@ type DateProps = {
   date: Date;
 };
 
-const ShowDate: React.FC<DateProps> = (props) => {
+const ShowDate: React.FC<DateProps> = memo((props) => {
   const { changeDate, date } = props;
 
   const [showCalendar, setShowCalendar] = useState(false);
@@ -41,6 +41,6 @@ const ShowDate: React.FC<DateProps> = (props) => {
       )}
     </>
   );
-};
+});
 
 export default ShowDate;

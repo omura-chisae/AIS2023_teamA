@@ -1,5 +1,5 @@
 import { Button } from "react-native-paper";
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { Text, StyleSheet, View } from "react-native";
 
 type CountButtonProps = {
@@ -8,7 +8,7 @@ type CountButtonProps = {
   countDown: () => void;
 };
 
-const countButton: React.FC<CountButtonProps> = (props) => {
+const countButton: React.FC<CountButtonProps> = memo((props) => {
   const { quantity, countUp, countDown } = props;
   return (
     <View style={styles.container}>
@@ -21,7 +21,7 @@ const countButton: React.FC<CountButtonProps> = (props) => {
       </Button>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
