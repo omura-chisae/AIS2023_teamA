@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { useState, memo, useCallback } from "react";
 import {
   TextInput,
   Modal,
@@ -14,6 +14,8 @@ import { View, Text, StyleSheet } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 
 import { AddUpdateStock } from "./AddUpdateStock";
+import { CategoryMenu } from "./CategoryMenu";
+import { useCategories } from "./components/useCategories";
 
 export const Stock = memo(() => {
   const [visible, setVisible] = useState(false);
@@ -33,10 +35,29 @@ export const Stock = memo(() => {
   const openSearchBar = () => setSearchBarVisible(true);
   const closeSearchBar = () => setSearchBarVisible(false);
 
-  const categories = [
-    { label: "カテゴリ1", value: "category1" },
-    { label: "カテゴリ2", value: "category2" },
-  ];
+  // カテゴリ編集画面用
+  const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
+  const hideCategoryModal = useCallback(() => setCategoryVisible(false), []);
+  const [categoryVisible, setCategoryVisible] = useState(false);
+
+  // const categories = [
+  //   { label: "カテゴリ1", value: "category1" },
+  //   { label: "カテゴリ2", value: "category2" },
+  // ];
+
+  // カテゴリを取得
+  const fetchedCategories = useCategories();
+  // プロパティ名を変換
+  const categories = fetchedCategories.map(({ id, title }) => ({
+    value: id,
+    label: title,
+  }));
+  // AddUpdateStackコンポーネント用にカテゴリにcheckedを付ける
+  const addIngredientCategory = fetchedCategories.map((category) => ({
+    id: category.id,
+    title: category.title,
+    checked: false,
+  }));
 
   const foodItems = ["たまねぎ", "にんじん", "ネギ"]; // 食品リスト
 
@@ -65,18 +86,34 @@ export const Stock = memo(() => {
                 value={selectedCategory}
               />
             </View>
+            <Appbar.Action icon="pencil" onPress={showCategoryModal} />
           </>
         )}
       </Appbar.Header>
+
       <Portal>
+        {/* カテゴリ編集画面 */}
+        <Modal
+          visible={categoryVisible}
+          onDismiss={hideCategoryModal}
+          contentContainerStyle={styles.containerStyle}
+        >
+          <Button onPress={hideCategoryModal}>閉じる</Button>
+          <CategoryMenu />
+        </Modal>
+
         <Modal
           visible={visible}
           onDismiss={hideModal}
           contentContainerStyle={styles.containerStyle}
         >
-          <AddUpdateStock hideModal={hideModal} />
+          <AddUpdateStock
+            hideModal={hideModal}
+            addIngredientCategory={addIngredientCategory}
+          />
           <Button onPress={hideModal}>Done</Button>
         </Modal>
+
         <Dialog visible={dialogVisible} onDismiss={hideItemDialog}>
           <Dialog.Title>{selectedItem}</Dialog.Title>
           <Dialog.Content>
