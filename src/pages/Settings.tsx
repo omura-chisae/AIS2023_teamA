@@ -1,6 +1,16 @@
 import { memo } from "react";
-import {Text} from 'react-native'
+import { View } from "react-native";
+import { Button, Text } from "react-native-paper";
 
 export const Settings = memo(() => {
-  return <Text>設定画面です。</Text>;
+  return (
+    <View style={{ flex: 1, padding: 16, justifyContent: 'space-between' }}>
+      <View>
+        <Text>ヘッダー</Text>
+      </View>
+      <Button mode="contained">ログアウト</Button>
+      <Button mode="contained">消費期限通知　ON</Button>
+      <Button mode="contained">消費期限通知　OFF</Button>
+    </View>
+  );
 });
