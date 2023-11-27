@@ -9,10 +9,11 @@ import {
   TouchableRipple,
   Button,
 } from "react-native-paper";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-import { collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, Timestamp, doc, deleteDoc } from 'firebase/firestore';
 import { db,auth } from "../firebase";
+import { SwipeListView } from "react-native-swipe-list-view";
 
 import { AddUpdateStock } from "./AddUpdateStock";
 import { EditStock,Ingredient } from "./EditStock";
@@ -27,13 +28,14 @@ export const Stock = memo(() => {
   const [isSearchBarVisible, setSearchBarVisible] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Ingredient|null>(null);
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
+  // const showModal = () => setVisible(true);
+  // const hideModal = () => setVisible(false);
   const hideItemDialog = () => setDialogVisible(false);
   const onChangeSearch = (query: string) => setSearchQuery(query);
   const openSearchBar = () => setSearchBarVisible(true);
   const closeSearchBar = () => setSearchBarVisible(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
   const categories = [
     { label: "カテゴリ1", value: "category1" },
@@ -59,6 +61,19 @@ const fetchIngredients = async () => {
   setIngredients(items);
 };
 
+const showAddModal = () => setIsAddModalVisible(true);
+const hideAddModal = () => setIsAddModalVisible(false);
+const showEditModal = () => setIsEditModalVisible(true);
+const hideEditModal = () => setIsEditModalVisible(false);
+
+const handleDeleteIngredient = async (ingredientId: string) => {
+  // Firestoreから該当のingredientを削除
+  const ingredientRef = doc(db, "ingredients", ingredientId);
+  await deleteDoc(ingredientRef);
+  // リストを更新
+  fetchIngredients();
+};
+
 useEffect(() => {
   console.log("現在の食材リスト状態:", ingredients); // 状態が更新された後にログを出力
 }, [ingredients]); // 依存配列に `ingredients` を指定
@@ -79,8 +94,8 @@ useEffect(() => {
       // 食材の編集画面を表示する関数
       const handleEditIngredient = () => {
         setEditMode(true);
-        setVisible(true); // 編集モーダルを表示
-        setDialogVisible(false); // 詳細ダイアログを非表示
+        showEditModal(); // 編集モーダルを表示
+        hideItemDialog(); // 詳細ダイアログを非表示
       };
     
   return (
@@ -97,7 +112,7 @@ useEffect(() => {
           />
         ) : (
           <>
-            <Appbar.Action icon="plus" onPress={showModal} />
+            <Appbar.Action icon="plus" onPress={showAddModal} />
             <Appbar.Action icon="magnify" onPress={openSearchBar} />
             <View style={{ flex: 1, justifyContent: "center" }}>
               <RNPickerSelect
@@ -112,13 +127,22 @@ useEffect(() => {
         )}
       </Appbar.Header>
       <Portal>
-        <Modal
-          visible={visible}
-          onDismiss={hideModal}
+      {/* 追加用モーダル */}
+          <Modal
+          visible={isAddModalVisible}
+          onDismiss={hideAddModal}
           contentContainerStyle={styles.stockContainer}
         >
-          <AddUpdateStock hideModal={hideModal} onAdd={fetchIngredients} />
-          <Button onPress={hideModal}>Done</Button>
+          <AddUpdateStock hideModal={hideAddModal} onAdd={fetchIngredients} />
+        </Modal>
+
+        {/* 編集用モーダル */}
+        <Modal
+          visible={isEditModalVisible}
+          onDismiss={hideEditModal}
+          contentContainerStyle={styles.stockContainer}
+        >
+          {selectedItem && <EditStock ingredient={selectedItem} hideModal={hideEditModal} onEditComplete={fetchIngredients} />}
         </Modal>
         <Dialog visible={dialogVisible} onDismiss={hideItemDialog}>
           <Dialog.Title>{selectedItem?.ingredientName}</Dialog.Title>
@@ -131,13 +155,6 @@ useEffect(() => {
             <Button onPress={hideItemDialog}>閉じる</Button>
           </Dialog.Actions>
         </Dialog>
-         <Modal
-          visible={editMode && visible}
-          onDismiss={() => { setVisible(false); setEditMode(false); }}
-          contentContainerStyle={styles.stockContainer}
-        >
-          {selectedItem && <EditStock ingredient={selectedItem} hideModal={() => { setVisible(false); setEditMode(false); }}onEditComplete={fetchIngredients} />}
-        </Modal>
       </Portal>
       <View style={styles.stockContainer}>
         {ingredients.map((ingredient) => (

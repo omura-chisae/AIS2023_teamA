@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
   // Stock コンポーネントで使用されるスタイル
   stockContainer: {
     padding: 20,
+    backgroundColor: "white"
   },
   stockRipple: {
     padding: 8,
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    margin: 10
+    margin: 10,
   },
   countButton: {
     marginHorizontal: 10,
