@@ -1,8 +1,20 @@
+
 import { memo } from "react";
-import { View } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { Alert, Button, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import OpenAI from './hooks/OpenAI/OpenAi';
 
 export const SearchRecipes = memo(() => {
+  return (
+      <OpenAI/> 
+  );
+});
+
+<!-- import { memo } from "react";
+import { View } from "react-native";
+import { Button, Text } from "react-native-paper"; -->
+
+<!-- export const SearchRecipes = memo(() => {
   const buttons = [
     [
       "種類",
@@ -101,5 +113,5 @@ export const SearchRecipes = memo(() => {
       </View>
     </View>
   );
-});
+}); -->
 
