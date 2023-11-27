@@ -21,16 +21,42 @@ const styles = StyleSheet.create({
     backgroundColor: "white"
   },
   stockRipple: {
+    paddingVertical: 20,
     padding: 8,
     borderBottomWidth: 1,
     borderBottomColor: "grey",
     overflow: "hidden",
+    backgroundColor: 'white', 
+    flex: 1, 
   },
   stockItemText: {
     fontSize: 18,
   },
   stockSearchInput: {
     flex: 1,
+  },
+  rowBack: {
+    alignItems: 'center',
+    backgroundColor: '#DDD',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingLeft: 15,
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 75,
+    height: '100%',
+    paddingVertical: 22, 
+    top: 0, 
+    bottom: 0, 
+    right: 0, 
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 
   // CountButton コンポーネントで使用されるスタイル

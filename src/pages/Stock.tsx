@@ -14,6 +14,7 @@ import RNPickerSelect from "react-native-picker-select";
 import { collection, query, where, getDocs, Timestamp, doc, deleteDoc } from 'firebase/firestore';
 import { db,auth } from "../firebase";
 import { SwipeListView } from "react-native-swipe-list-view";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 import { AddUpdateStock } from "./AddUpdateStock";
 import { EditStock,Ingredient } from "./EditStock";
@@ -36,6 +37,7 @@ export const Stock = memo(() => {
   const closeSearchBar = () => setSearchBarVisible(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isSwiping, setIsSwiping] = useState(false);
 
   const categories = [
     { label: "カテゴリ1", value: "category1" },
@@ -87,8 +89,10 @@ useEffect(() => {
 
       // 食材をタップしたときの処理（既存の関数を修正）
       const handleIngredientTap = (ingredient: Ingredient) => {
+      if(!isSwiping){
         setSelectedItem(ingredient);
         setDialogVisible(true); // ダイアログを表示
+      }
       };
     
       // 食材の編集画面を表示する関数
@@ -98,6 +102,8 @@ useEffect(() => {
         hideItemDialog(); // 詳細ダイアログを非表示
       };
     
+      
+
   return (
     <Provider>
       <Appbar.Header>
@@ -157,17 +163,51 @@ useEffect(() => {
         </Dialog>
       </Portal>
       <View style={styles.stockContainer}>
-        {ingredients.map((ingredient) => (
-          <TouchableRipple
-            key={ingredient.id}
-            onPress={() => handleIngredientTap(ingredient)}
-            rippleColor="rgba(0, 0, 0, .32)"
-            style={styles.stockRipple}
-          >
-            <Text style={styles.stockItemText}>{ingredient.ingredientName}</Text>
-          </TouchableRipple>
-        ))}
+  <SwipeListView
+    data={ingredients}
+    onRowOpen={() => {
+      setIsSwiping(true);
+    }}
+    onRowClose={() => {
+      setIsSwiping(false);
+    }}
+    swipeGestureBegan={() => {
+      setIsSwiping(true);
+    }}
+    swipeGestureEnded={() => {
+      setIsSwiping(true);
+    }}
+    
+    renderItem={(data, rowMap) => (
+      <TouchableRipple
+      onPress={() => {
+        if (!isSwiping) {
+          handleIngredientTap(data.item);
+        }
+      }}
+        style={styles.stockRipple}
+      >
+        <View>
+          <Text style={styles.stockItemText}>{data.item.ingredientName}</Text>
+        </View>
+      </TouchableRipple>
+    )}
+    
+    renderHiddenItem={(data, rowMap) => (
+      <View style={styles.rowBack}>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDeleteIngredient(data.item.id)}
+        >
+          <Text style={styles.deleteButtonText}>削除</Text>
+        </TouchableOpacity>
       </View>
+    )}
+    leftOpenValue={0} 
+    rightOpenValue={-75} 
+    disableRightSwipe
+  />
+</View>
     </Provider>
   );
 });
