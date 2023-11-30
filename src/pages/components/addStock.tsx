@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { List, Checkbox, TextInput } from "react-native-paper";
 
 type addStockProps = {
   changeIngredientName: (ingredientName: string) => void;
-  handleCheckboxToggle: (itemId: Number, items: Array<itemProps>) => void;
+  handleCheckboxToggle: (itemId: string, items: Array<itemProps>) => void;
   categoryLists: Array<itemProps>;
 };
 
-export type itemProps = { id: number; title: string; checked: boolean };
+export type itemProps = { id: string; title: string; checked: boolean };
 
-const addStock: React.FC<addStockProps> = (props) => {
+const addStock: React.FC<addStockProps> = memo((props) => {
   const { changeIngredientName, handleCheckboxToggle, categoryLists } = props;
 
   return (
@@ -40,6 +40,6 @@ const addStock: React.FC<addStockProps> = (props) => {
       </List.Section>
     </>
   );
-};
+});
 
 export default addStock;

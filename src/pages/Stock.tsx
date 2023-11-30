@@ -1,4 +1,4 @@
-import { useState,useEffect, memo } from "react";
+import { useState, memo, useCallback } from "react";
 import {
   Modal,
   Portal,
@@ -17,10 +17,8 @@ import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import { AddUpdateStock } from "./AddUpdateStock";
-import { EditStock,Ingredient } from "./EditStock";
-import styles from "./style/Styles";
-
-
+import { CategoryMenu } from "./CategoryMenu";
+import { useCategories } from "./components/useCategories";
 
 export const Stock = memo(() => {
   const [visible, setVisible] = useState(false);
@@ -35,74 +33,32 @@ export const Stock = memo(() => {
   const onChangeSearch = (query: string) => setSearchQuery(query);
   const openSearchBar = () => setSearchBarVisible(true);
   const closeSearchBar = () => setSearchBarVisible(false);
-  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
-  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const [isSwiping, setIsSwiping] = useState(false);
 
-  const categories = [
-    { label: "カテゴリ1", value: "category1" },
-    { label: "カテゴリ2", value: "category2" },
-  ];
+  // カテゴリ編集画面用
+  const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
+  const hideCategoryModal = useCallback(() => setCategoryVisible(false), []);
+  const [categoryVisible, setCategoryVisible] = useState(false);
 
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  // const categories = [
+  //   { label: "カテゴリ1", value: "category1" },
+  //   { label: "カテゴリ2", value: "category2" },
+  // ];
 
-// Stock.tsx 内の fetchIngredients 関数
-const fetchIngredients = async () => {
-  const q = query(collection(db, "ingredients"), where("userId", "==", auth.currentUser?.uid));
-  const querySnapshot = await getDocs(q);
-  const items: Ingredient[] = [];
-  querySnapshot.forEach((doc) => {
-    let data = doc.data() as Ingredient;
-    // expiryDateがTimestampの場合、Dateオブジェクトに変換
-    if (data.expiryDate && data.expiryDate instanceof Timestamp) {
-      data = { ...data, expiryDate: data.expiryDate.toDate() };
-    }
-    items.push({ ...data, id: doc.id });
-  });
-  console.log("取得した食材データ:", items); 
-  setIngredients(items);
-};
+  // カテゴリを取得
+  const fetchedCategories = useCategories();
+  // プロパティ名を変換
+  const categories = fetchedCategories.map(({ id, title }) => ({
+    value: id,
+    label: title,
+  }));
+  // AddUpdateStackコンポーネント用にカテゴリにcheckedを付ける
+  const addIngredientCategory = fetchedCategories.map((category) => ({
+    id: category.id,
+    title: category.title,
+    checked: false,
+  }));
 
-const showAddModal = () => setIsAddModalVisible(true);
-const hideAddModal = () => setIsAddModalVisible(false);
-const showEditModal = () => setIsEditModalVisible(true);
-const hideEditModal = () => setIsEditModalVisible(false);
-
-const handleDeleteIngredient = async (ingredientId: string) => {
-  // Firestoreから該当のingredientを削除
-  const ingredientRef = doc(db, "ingredients", ingredientId);
-  await deleteDoc(ingredientRef);
-  // リストを更新
-  fetchIngredients();
-};
-
-useEffect(() => {
-  console.log("現在の食材リスト状態:", ingredients); // 状態が更新された後にログを出力
-}, [ingredients]); // 依存配列に `ingredients` を指定
-
-useEffect(() => {
-  fetchIngredients();
-}, []); // 依存配列を空にして、コンポーネントのマウント時にのみ実行
-
-    
-      const [editMode, setEditMode] = useState(false); // 編集モードのフラグ
-
-      // 食材をタップしたときの処理（既存の関数を修正）
-      const handleIngredientTap = (ingredient: Ingredient) => {
-      if(!isSwiping){
-        setSelectedItem(ingredient);
-        setDialogVisible(true); // ダイアログを表示
-      }
-      };
-    
-      // 食材の編集画面を表示する関数
-      const handleEditIngredient = () => {
-        setEditMode(true);
-        showEditModal(); // 編集モーダルを表示
-        hideItemDialog(); // 詳細ダイアログを非表示
-      };
-    
-      
+  const foodItems = ["たまねぎ", "にんじん", "ネギ"]; // 食品リスト
 
   return (
     <Provider>
@@ -129,27 +85,36 @@ useEffect(() => {
                 value={selectedCategory}
               />
             </View>
+            <Appbar.Action icon="pencil" onPress={showCategoryModal} />
           </>
         )}
       </Appbar.Header>
+
       <Portal>
-      {/* 追加用モーダル */}
-          <Modal
-          visible={isAddModalVisible}
-          onDismiss={hideAddModal}
-          contentContainerStyle={styles.stockContainer}
+        {/* カテゴリ編集画面 */}
+        <Modal
+          visible={categoryVisible}
+          onDismiss={hideCategoryModal}
+          contentContainerStyle={styles.containerStyle}
         >
-          <AddUpdateStock hideModal={hideAddModal} onAdd={fetchIngredients} />
+          <Button onPress={hideCategoryModal}>閉じる</Button>
+          <CategoryMenu />
         </Modal>
 
-        {/* 編集用モーダル */}
         <Modal
-          visible={isEditModalVisible}
-          onDismiss={hideEditModal}
-          contentContainerStyle={styles.stockContainer}
+          visible={visible}
+          onDismiss={hideModal}
+          contentContainerStyle={styles.containerStyle}
         >
-          {selectedItem && <EditStock ingredient={selectedItem} hideModal={hideEditModal} onEditComplete={fetchIngredients} />}
+          <AddUpdateStock
+            hideModal={hideModal}
+            addIngredientCategory={addIngredientCategory}
+          />
+          <Button onPress={hideModal}>Done</Button>
+       
+>>>>>>> master
         </Modal>
+
         <Dialog visible={dialogVisible} onDismiss={hideItemDialog}>
           <Dialog.Title>{selectedItem?.ingredientName}</Dialog.Title>
           <Dialog.Content>
