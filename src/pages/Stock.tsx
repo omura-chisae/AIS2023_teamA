@@ -10,10 +10,18 @@ import {
   Button,
 } from "react-native-paper";
 
-import { View, Text} from "react-native";
+import { View, Text } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-import { collection, query, where, getDocs, Timestamp, doc, deleteDoc } from 'firebase/firestore';
-import { db,auth } from "../firebase";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  Timestamp,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+import { db, auth } from "../firebase";
 
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -31,11 +39,7 @@ export const Stock = memo(() => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchBarVisible, setSearchBarVisible] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
-
-  const [selectedItem, setSelectedItem] = useState<Ingredient|null>(null);
-
-  // const showModal = () => setVisible(true);
-  // const hideModal = () => setVisible(false);
+  const [selectedItem, setSelectedItem] = useState<Ingredient | null>(null);
   const hideItemDialog = () => setDialogVisible(false);
   const onChangeSearch = (query: string) => setSearchQuery(query);
   const openSearchBar = () => setSearchBarVisible(true);
@@ -43,16 +47,12 @@ export const Stock = memo(() => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isSwiping, setIsSwiping] = useState(false);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
   // カテゴリ編集画面用
   const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
   const hideCategoryModal = useCallback(() => setCategoryVisible(false), []);
   const [categoryVisible, setCategoryVisible] = useState(false);
-
-  // const categories = [
-  //   { label: "カテゴリ1", value: "category1" },
-  //   { label: "カテゴリ2", value: "category2" },
-  // ];
 
   // カテゴリを取得
   const fetchedCategories = useCategories();
@@ -67,8 +67,6 @@ export const Stock = memo(() => {
     title: category.title,
     checked: false,
   }));
-
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
   // Stock.tsx 内の fetchIngredients 関数
   const fetchIngredients = async () => {
@@ -165,33 +163,29 @@ export const Stock = memo(() => {
           onDismiss={hideAddModal}
           contentContainerStyle={styles.stockContainer}
         >
-          <AddUpdateStock hideModal={hideAddModal} onAdd={fetchIngredients} />
+          <AddUpdateStock
+            hideModal={hideAddModal}
+            onAdd={fetchIngredients}
+            addIngredientCategory={addIngredientCategory}
+          />
         </Modal>
 
-        {/* 編集用モーダル */}
         {/* カテゴリ編集画面 */}
         <Modal
           visible={categoryVisible}
           onDismiss={hideCategoryModal}
-          contentContainerStyle={styles.containerStyle}
+          contentContainerStyle={styles.stockContainer}
         >
           <Button onPress={hideCategoryModal}>閉じる</Button>
           <CategoryMenu />
         </Modal>
 
+        {/* 編集用モーダル */}
         <Modal
           visible={isEditModalVisible}
           onDismiss={hideEditModal}
           contentContainerStyle={styles.stockContainer}
         >
-
-          <AddUpdateStock
-            hideModal={hideModal}
-            addIngredientCategory={addIngredientCategory}
-          />
-          <Button onPress={hideModal}>Done</Button>
-       
-
           {selectedItem && (
             <EditStock
               ingredient={selectedItem}
@@ -200,14 +194,23 @@ export const Stock = memo(() => {
               onEditComplete={fetchIngredients}
             />
           )}
-
         </Modal>
+
+        {/* <AddUpdateStock
+          hideModal={hideAddModal}
+          onAdd={fetchIngredients}
+          addIngredientCategory={addIngredientCategory}
+        /> */}
 
         <Dialog visible={dialogVisible} onDismiss={hideItemDialog}>
           <Dialog.Title>{selectedItem?.ingredientName}</Dialog.Title>
           <Dialog.Content>
-
-            <Text>消費期限: {selectedItem?.expiryDate instanceof Date ? selectedItem.expiryDate.toDateString() : selectedItem?.expiryDate}</Text>
+            <Text>
+              消費期限:{" "}
+              {selectedItem?.expiryDate instanceof Date
+                ? selectedItem.expiryDate.toDateString()
+                : selectedItem?.expiryDate}
+            </Text>
 
             <Text>数量: {selectedItem?.quantity}</Text>
           </Dialog.Content>
@@ -218,7 +221,6 @@ export const Stock = memo(() => {
         </Dialog>
       </Portal>
       <View style={styles.stockContainer}>
-
         <SwipeListView
           data={ingredients}
           onRowOpen={() => {
@@ -263,14 +265,7 @@ export const Stock = memo(() => {
           rightOpenValue={-75}
           disableRightSwipe
         />
-
       </View>
-    )}
-    leftOpenValue={0} 
-    rightOpenValue={-75} 
-    disableRightSwipe
-  />
-</View>
     </Provider>
   );
 });

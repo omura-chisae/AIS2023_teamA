@@ -51,11 +51,6 @@ export const AddUpdateStock: React.FC<addUpdateStockProps> = memo((props) => {
     onAdd(); // 新しい食材が追加された後にリストを更新
   };
 
-  // const categories = [
-  //   { id: "1", title: "肉", checked: false },
-  //   { id: "2", title: "野菜", checked: false },
-  // ];
-
   // AddStock
   const [ingredientName, setIngredientName] = useState("");
   const changeIngredientName = useCallback((ingredientName: string) => {

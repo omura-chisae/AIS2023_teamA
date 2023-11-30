@@ -1,25 +1,28 @@
-import React, { useState, useCallback } from 'react';
-import { GiftedChat, IMessage } from 'react-native-gifted-chat';
-import { StyleSheet, View } from 'react-native';
-import axios from 'axios';
+import React, { useState, useCallback } from "react";
+import { GiftedChat, IMessage } from "react-native-gifted-chat";
+import { StyleSheet, View } from "react-native";
+import axios from "axios";
 
 const OpenAI = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
 
-  const APIkye = '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'
+  const APIkye = "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";
 
   const sendMessageToChatGPT = async (message: any) => {
     try {
       const response = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
+        "https://api.openai.com/v1/chat/completions",
         {
           model: "gpt-3.5-turbo-0301", // 使用するモデル
-          messages: [{ role: 'system', content: 'You' }, { role: 'user', content: message }],
+          messages: [
+            { role: "system", content: "You" },
+            { role: "user", content: message },
+          ],
         },
         {
           headers: {
-            Authorization : `Bearer ${APIkye}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${APIkye}`,
+            "Content-Type": "application/json",
           },
         }
       );
@@ -28,14 +31,16 @@ const OpenAI = () => {
       const reply = response.data.choices[0].message.content;
       return reply;
     } catch (error) {
-      console.error('ChatGPT API request error:', error);
+      console.error("ChatGPT API request error:", error);
       return null;
     }
   };
 
-  const handleSend = useCallback(async (newMessages = []) => {
+  const handleSend = useCallback(async (newMessages: IMessage[] = []) => {
     const userMessage = newMessages[0];
-    setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
+    setMessages((previousMessages) =>
+      GiftedChat.append(previousMessages, newMessages)
+    );
 
     // ChatGPTにメッセージを送信して応答を受け取る
     const reply = await sendMessageToChatGPT(userMessage.text);
@@ -45,21 +50,19 @@ const OpenAI = () => {
         _id: Math.random().toString(),
         text: reply,
         createdAt: new Date(),
-        user: { _id: 2, name: 'ChatGPT' },
-        avatar: 'https://placeimg.com/140/140/any',
+        user: { _id: 2, name: "ChatGPT" },
+        avatar: "https://placeimg.com/140/140/any",
       };
 
-      setMessages(previousMessages => GiftedChat.append(previousMessages, [botMessage]));
+      setMessages((previousMessages) =>
+        GiftedChat.append(previousMessages, [botMessage])
+      );
     }
   }, []);
 
   return (
     <View style={styles.container}>
-      <GiftedChat
-        messages={messages}
-        onSend={handleSend}
-        user={{ _id: 1 }}
-      />
+      <GiftedChat messages={messages} onSend={handleSend} user={{ _id: 1 }} />
     </View>
   );
 };

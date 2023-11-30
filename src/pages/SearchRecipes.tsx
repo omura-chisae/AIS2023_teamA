@@ -1,8 +1,8 @@
-import React from "react";
 import { memo } from "react";
-import { Alert, Button, View } from "react-native";
+import { Alert, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import OpenAI from "./hooks/OpenAI/OpenAi";
+import { Text, Button } from "react-native-paper";
 
 export const SearchRecipes = memo(() => {
   const buttons = [

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, Alert } from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import { auth } from "../firebase";
@@ -33,7 +33,9 @@ const Auth: React.FC = () => {
       // ログイン成功時のページ遷移
       navigation.reset({
         index: 0,
-        routes: [{ name: 'UserPage', params: { userId: userCredential.user.uid } }],
+        routes: [
+          { name: "UserPage", params: { userId: userCredential.user.uid } },
+        ],
       });
     } catch (error) {
       console.error(error);
@@ -55,7 +57,9 @@ const Auth: React.FC = () => {
       // 新規登録成功時のページ遷移
       navigation.reset({
         index: 0,
-        routes: [{ name: 'UserPage', params: { userId: userCredential.user.uid } }],
+        routes: [
+          { name: "UserPage", params: { userId: userCredential.user.uid } },
+        ],
       });
     } catch (error) {
       console.error(error);
@@ -90,6 +94,5 @@ const Auth: React.FC = () => {
     </View>
   );
 };
-
 
 export default Auth;
