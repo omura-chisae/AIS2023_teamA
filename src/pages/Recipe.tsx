@@ -2,7 +2,7 @@ import { memo } from "react";
 import { Text } from "react-native";
 
 
-export const Recipe = ({navigation}) => (
+export const Recipe = ({}) => (
   <Text> レシピ提案ボタンが押された時、表示されるページです。
     
     ジャガイモと豚肉を使った美味しい中華の汁物レシピをご紹介します。以下はジャガイモと豚肉の中華風スープのレシピです。
