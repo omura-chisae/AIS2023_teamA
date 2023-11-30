@@ -1,27 +1,29 @@
 import React, { useState, useCallback } from 'react';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
-
 import { StyleSheet, View } from 'react-native';
-
 import axios from 'axios';
 
 const OpenAI = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
 
-  const sendMessageToChatGPT = async (message) => {
+  const APIkye = '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'
+
+  const sendMessageToChatGPT = async (message: any) => {
     try {
-      const response = await axios.post('https://api.openai.com/v1/chat/completions', 
-      {
-        model: "gpt-3.5-turbo-0301", // 使用するモデル
-        messages: [{ role: 'system', content: 'You' }, { role: 'user', content: message }],
-      }, {
-        headers: {
-          'Authorization': `Bearer ${'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'}`,
-          'Content-Type': 'application/json',
+      const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: "gpt-3.5-turbo-0301", // 使用するモデル
+          messages: [{ role: 'system', content: 'You' }, { role: 'user', content: message }],
         },
-        method: 'POST',
-      }
-    );
+        {
+          headers: {
+            Authorization : `Bearer ${APIkye}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
       // ChatGPTからの応答を取得
       const reply = response.data.choices[0].message.content;
       return reply;
@@ -57,15 +59,15 @@ const OpenAI = () => {
         messages={messages}
         onSend={handleSend}
         user={{ _id: 1 }}
-    />
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container : {
+  container: {
     flex: 1,
-  }
+  },
 });
 
 export default OpenAI;
