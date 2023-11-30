@@ -1,25 +1,28 @@
 import { Button } from "react-native-paper";
-import { useState } from "react";
-import { Text } from "react-native";
+import React, { useState, memo } from "react";
+import { Text, View } from "react-native";
 
-const countButton = () => {
-  const [count, setCount] = useState(0);
+import styles from "../style/Styles";
+
+type CountButtonProps = {
+  quantity: number;
+  countUp: () => void;
+  countDown: () => void;
+};
+
+const countButton: React.FC<CountButtonProps> = memo((props) => {
+  const { quantity, countUp, countDown } = props;
   return (
-    <>
-      <Button
-        mode="contained"
-        onPress={() => {
-          count >= 1 && setCount(count - 1);
-        }}
-      >
+    <View style={styles.countButtonContainer}>
+      <Button mode="contained" onPress={countDown}>
         ー
       </Button>
-      <Text>{count}</Text>
-      <Button mode="contained" onPress={() => setCount(count + 1)}>
+      <Text style={styles.countButtonText}>{quantity}</Text>
+      <Button mode="contained" onPress={countUp}>
         ＋
       </Button>
-    </>
+    </View>
   );
-};
+});
 
 export default countButton;

@@ -1,46 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { List, Checkbox, TextInput } from "react-native-paper";
 
-const AddStock = () => {
-  const initialItems = [
-    { id: 1, title: "肉", checked: false },
-    { id: 2, title: "野菜", checked: false },
-  ];
+type addStockProps = {
+  changeIngredientName: (ingredientName: string) => void;
+  handleCheckboxToggle: (itemId: string, items: Array<itemProps>) => void;
+  categoryLists: Array<itemProps>;
+};
 
-  const [items, setItems] = useState(initialItems);
+export type itemProps = { id: string; title: string; checked: boolean };
 
-  const handleCheckboxToggle = (itemId: Number) => {
-    const updatedItems = items.map((item) =>
-      item.id === itemId ? { ...item, checked: !item.checked } : item
-    );
-    setItems(updatedItems);
-  };
-
-  // Inputの処理
-  const [text, setText] = useState("");
-
-  const changeText = (newText: string) => {
-    setText(newText);
-  };
-  // Inputの処理ここまで
+const addStock: React.FC<addStockProps> = memo((props) => {
+  const { changeIngredientName, handleCheckboxToggle, categoryLists } = props;
 
   return (
     <>
-      <TextInput onChangeText={changeText} placeholder="食材名を入力" />
+      <TextInput
+        onChangeText={changeIngredientName}
+        placeholder="食材名を入力"
+      />
 
       <List.Section>
         <List.Accordion
           title="カテゴリを選択"
           left={(props) => <List.Icon {...props} icon="folder" />}
         >
-          {items.map((item) => (
+          {categoryLists.map((item: itemProps) => (
             <List.Item
               key={item.id}
               title={item.title}
               right={() => (
                 <Checkbox
                   status={item.checked ? "checked" : "unchecked"}
-                  onPress={() => handleCheckboxToggle(item.id)}
+                  onPress={() => handleCheckboxToggle(item.id, categoryLists)}
                 />
               )}
             />
@@ -49,6 +40,6 @@ const AddStock = () => {
       </List.Section>
     </>
   );
-};
+});
 
-export default AddStock;
+export default addStock;
