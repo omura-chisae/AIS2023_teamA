@@ -40,11 +40,9 @@ type addUpdateStockProps = {
   hideModal: () => void;
   onAdd: () => void;
   addIngredientCategory: itemProps[];
-  onAdd: () => void;
 };
 
 export const AddUpdateStock: React.FC<addUpdateStockProps> = memo((props) => {
-
   const { hideModal, onAdd, addIngredientCategory } = props;
 
   const handleAddClick = async () => {
@@ -57,12 +55,6 @@ export const AddUpdateStock: React.FC<addUpdateStockProps> = memo((props) => {
   //   { id: "1", title: "肉", checked: false },
   //   { id: "2", title: "野菜", checked: false },
   // ];
-
-  const handleAddClick = async () => {
-    await addIngredient(ingredientName, categoryLists, date, quantity);
-    hideModal();
-    onAdd(); // 新しい食材が追加された後にリストを更新
-  };
 
   // AddStock
   const [ingredientName, setIngredientName] = useState("");
