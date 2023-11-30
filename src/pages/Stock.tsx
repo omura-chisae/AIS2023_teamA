@@ -9,18 +9,12 @@ import {
   TouchableRipple,
   Button,
 } from "react-native-paper";
-import { View, Text } from "react-native";
+
+import { View, Text} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  Timestamp,
-  doc,
-  deleteDoc,
-} from "firebase/firestore";
-import { db, auth } from "../firebase";
+import { collection, query, where, getDocs, Timestamp, doc, deleteDoc } from 'firebase/firestore';
+import { db,auth } from "../firebase";
+
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
@@ -37,7 +31,9 @@ export const Stock = memo(() => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchBarVisible, setSearchBarVisible] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Ingredient | null>(null);
+
+  const [selectedItem, setSelectedItem] = useState<Ingredient|null>(null);
+
   // const showModal = () => setVisible(true);
   // const hideModal = () => setVisible(false);
   const hideItemDialog = () => setDialogVisible(false);
@@ -188,6 +184,14 @@ export const Stock = memo(() => {
           onDismiss={hideEditModal}
           contentContainerStyle={styles.stockContainer}
         >
+
+          <AddUpdateStock
+            hideModal={hideModal}
+            addIngredientCategory={addIngredientCategory}
+          />
+          <Button onPress={hideModal}>Done</Button>
+       
+
           {selectedItem && (
             <EditStock
               ingredient={selectedItem}
@@ -196,17 +200,15 @@ export const Stock = memo(() => {
               onEditComplete={fetchIngredients}
             />
           )}
+
         </Modal>
 
         <Dialog visible={dialogVisible} onDismiss={hideItemDialog}>
           <Dialog.Title>{selectedItem?.ingredientName}</Dialog.Title>
           <Dialog.Content>
-            <Text>
-              消費期限:{" "}
-              {selectedItem?.expiryDate instanceof Date
-                ? selectedItem.expiryDate.toDateString()
-                : selectedItem?.expiryDate}
-            </Text>
+
+            <Text>消費期限: {selectedItem?.expiryDate instanceof Date ? selectedItem.expiryDate.toDateString() : selectedItem?.expiryDate}</Text>
+
             <Text>数量: {selectedItem?.quantity}</Text>
           </Dialog.Content>
           <Dialog.Actions>
@@ -216,6 +218,7 @@ export const Stock = memo(() => {
         </Dialog>
       </Portal>
       <View style={styles.stockContainer}>
+
         <SwipeListView
           data={ingredients}
           onRowOpen={() => {
@@ -260,7 +263,14 @@ export const Stock = memo(() => {
           rightOpenValue={-75}
           disableRightSwipe
         />
+
       </View>
+    )}
+    leftOpenValue={0} 
+    rightOpenValue={-75} 
+    disableRightSwipe
+  />
+</View>
     </Provider>
   );
 });
