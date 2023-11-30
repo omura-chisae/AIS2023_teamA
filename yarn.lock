@@ -1191,9 +1191,9 @@
     "safe-json-stringify" "~1"
 
 "@expo/cli@0.10.16":
-  "integrity" "sha512-EwgnRN5AMElg0JJjFLJTPk5hYkVXxnNMLIvZBiTfGoCq+rDw6u7Mg5l2Bbm/geSHOoplaHyPZ/Wr23FAuZWehA=="
-  "resolved" "https://registry.npmjs.org/@expo/cli/-/cli-0.10.16.tgz"
-  "version" "0.10.16"
+  version "0.10.16"
+  resolved "https://registry.npmjs.org/@expo/cli/-/cli-0.10.16.tgz"
+  integrity sha512-EwgnRN5AMElg0JJjFLJTPk5hYkVXxnNMLIvZBiTfGoCq+rDw6u7Mg5l2Bbm/geSHOoplaHyPZ/Wr23FAuZWehA==
   dependencies:
     "@babel/runtime" "^7.20.0"
     "@expo/code-signing-certificates" "0.0.5"
@@ -3907,10 +3907,10 @@
   "resolved" "https://registry.npmjs.org/compare-versions/-/compare-versions-3.6.0.tgz"
   "version" "3.6.0"
 
-"component-type@^1.2.1":
-  "integrity" "sha512-99VUHREHiN5cLeHm3YLq312p6v+HUEcwtLCAtelvUDI6+SH5g5Cr85oNR2S1o6ywzL0ykMbuwLzM2ANocjEOIA=="
-  "resolved" "https://registry.npmjs.org/component-type/-/component-type-1.2.2.tgz"
-  "version" "1.2.2"
+component-type@^1.2.1:
+  version "1.2.2"
+  resolved "https://registry.npmjs.org/component-type/-/component-type-1.2.2.tgz"
+  integrity sha512-99VUHREHiN5cLeHm3YLq312p6v+HUEcwtLCAtelvUDI6+SH5g5Cr85oNR2S1o6ywzL0ykMbuwLzM2ANocjEOIA==
 
 "compressible@~2.0.16":
   "integrity" "sha512-AF3r7P5dWxL8MxyITRMlORQNaOA2IkAFaTr4k7BUumjPtRpGDTZpl0Pb1XCO6JeDCBdp126Cgs9sMxqSjgYyRg=="
@@ -4668,10 +4668,10 @@
     "@expo/config" "~8.1.0"
     "uuid" "^3.3.2"
 
-"expo-file-system@~15.4.0", "expo-file-system@~15.4.5":
-  "integrity" "sha512-xy61KaTaDgXhT/dllwYDHm3ch026EyO8j4eC6wSVr/yE12MMMxAC09yGwy4f7kkOs6ztGVQF5j7ldRzNLN4l0Q=="
-  "resolved" "https://registry.npmjs.org/expo-file-system/-/expo-file-system-15.4.5.tgz"
-  "version" "15.4.5"
+expo-file-system@~15.4.0, expo-file-system@~15.4.5:
+  version "15.4.5"
+  resolved "https://registry.npmjs.org/expo-file-system/-/expo-file-system-15.4.5.tgz"
+  integrity sha512-xy61KaTaDgXhT/dllwYDHm3ch026EyO8j4eC6wSVr/yE12MMMxAC09yGwy4f7kkOs6ztGVQF5j7ldRzNLN4l0Q==
   dependencies:
     "uuid" "^3.4.0"
 
@@ -4699,10 +4699,10 @@
     "find-up" "^5.0.0"
     "fs-extra" "^9.1.0"
 
-"expo-modules-core@1.5.12":
-  "integrity" "sha512-mY4wTDU458dhwk7IVxLNkePlYXjs9BTgk4NQHBUXf0LapXsvr+i711qPZaFNO4egf5qq6fQV+Yfd/KUguHstnQ=="
-  "resolved" "https://registry.npmjs.org/expo-modules-core/-/expo-modules-core-1.5.12.tgz"
-  "version" "1.5.12"
+expo-modules-core@1.5.12:
+  version "1.5.12"
+  resolved "https://registry.npmjs.org/expo-modules-core/-/expo-modules-core-1.5.12.tgz"
+  integrity sha512-mY4wTDU458dhwk7IVxLNkePlYXjs9BTgk4NQHBUXf0LapXsvr+i711qPZaFNO4egf5qq6fQV+Yfd/KUguHstnQ==
   dependencies:
     "compare-versions" "^3.4.0"
     "invariant" "^2.2.4"
@@ -4722,31 +4722,31 @@
   "resolved" "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-1.6.0.tgz"
   "version" "1.6.0"
 
-"expo@*", "expo@^49.0.21", "expo@^49.0.7":
-  "integrity" "sha512-JpHL6V0yt8/fzsmkAdPdtsah+lU6Si4ac7MDklLYvzEil7HAFEsN/pf06wQ21ax4C+BL27hI6JJoD34tzXUCJA=="
-  "resolved" "https://registry.npmjs.org/expo/-/expo-49.0.21.tgz"
-  "version" "49.0.21"
+expo@*, expo@^49.0.21, expo@^49.0.7:
+  version "49.0.21"
+  resolved "https://registry.npmjs.org/expo/-/expo-49.0.21.tgz"
+  integrity sha512-JpHL6V0yt8/fzsmkAdPdtsah+lU6Si4ac7MDklLYvzEil7HAFEsN/pf06wQ21ax4C+BL27hI6JJoD34tzXUCJA==
   dependencies:
     "@babel/runtime" "^7.20.0"
     "@expo/cli" "0.10.16"
     "@expo/config" "8.1.2"
     "@expo/config-plugins" "7.2.5"
     "@expo/vector-icons" "^13.0.0"
-    "babel-preset-expo" "~9.5.2"
-    "expo-application" "~5.3.0"
-    "expo-asset" "~8.10.1"
-    "expo-constants" "~14.4.2"
-    "expo-file-system" "~15.4.5"
-    "expo-font" "~11.4.0"
-    "expo-keep-awake" "~12.3.0"
-    "expo-modules-autolinking" "1.5.1"
-    "expo-modules-core" "1.5.12"
-    "fbemitter" "^3.0.0"
-    "invariant" "^2.2.4"
-    "md5-file" "^3.2.3"
-    "node-fetch" "^2.6.7"
-    "pretty-format" "^26.5.2"
-    "uuid" "^3.4.0"
+    babel-preset-expo "~9.5.2"
+    expo-application "~5.3.0"
+    expo-asset "~8.10.1"
+    expo-constants "~14.4.2"
+    expo-file-system "~15.4.5"
+    expo-font "~11.4.0"
+    expo-keep-awake "~12.3.0"
+    expo-modules-autolinking "1.5.1"
+    expo-modules-core "1.5.12"
+    fbemitter "^3.0.0"
+    invariant "^2.2.4"
+    md5-file "^3.2.3"
+    node-fetch "^2.6.7"
+    pretty-format "^26.5.2"
+    uuid "^3.4.0"
 
 "express@^4.17.3":
   "integrity" "sha512-5/PsL6iGPdfQ/lKM1UuielYgv3BUoJfz1aUwU9vHZ+J7gyvwdQXFEBIEIaxeGf0GIcreATNyBExtalisDbuMqQ=="
