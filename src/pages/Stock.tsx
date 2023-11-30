@@ -1,4 +1,4 @@
-import { useState, memo, useCallback } from "react";
+import { useState, useEffect, memo, useCallback } from "react";
 import {
   Modal,
   Portal,
@@ -9,14 +9,19 @@ import {
   TouchableRipple,
   Button,
 } from "react-native-paper";
+
 import { View, Text} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import { collection, query, where, getDocs, Timestamp, doc, deleteDoc } from 'firebase/firestore';
 import { db,auth } from "../firebase";
+
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import { AddUpdateStock } from "./AddUpdateStock";
+import { EditStock, Ingredient } from "./EditStock";
+import styles from "./style/Styles";
+
 import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
 
@@ -26,13 +31,18 @@ export const Stock = memo(() => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchBarVisible, setSearchBarVisible] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
+
   const [selectedItem, setSelectedItem] = useState<Ingredient|null>(null);
+
   // const showModal = () => setVisible(true);
   // const hideModal = () => setVisible(false);
   const hideItemDialog = () => setDialogVisible(false);
   const onChangeSearch = (query: string) => setSearchQuery(query);
   const openSearchBar = () => setSearchBarVisible(true);
   const closeSearchBar = () => setSearchBarVisible(false);
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isSwiping, setIsSwiping] = useState(false);
 
   // カテゴリ編集画面用
   const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
@@ -58,7 +68,65 @@ export const Stock = memo(() => {
     checked: false,
   }));
 
-  const foodItems = ["たまねぎ", "にんじん", "ネギ"]; // 食品リスト
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+
+  // Stock.tsx 内の fetchIngredients 関数
+  const fetchIngredients = async () => {
+    const q = query(
+      collection(db, "ingredients"),
+      where("userId", "==", auth.currentUser?.uid)
+    );
+    const querySnapshot = await getDocs(q);
+    const items: Ingredient[] = [];
+    querySnapshot.forEach((doc) => {
+      let data = doc.data() as Ingredient;
+      // expiryDateがTimestampの場合、Dateオブジェクトに変換
+      if (data.expiryDate && data.expiryDate instanceof Timestamp) {
+        data = { ...data, expiryDate: data.expiryDate.toDate() };
+      }
+      items.push({ ...data, id: doc.id });
+    });
+    console.log("取得した食材データ:", items);
+    setIngredients(items);
+  };
+
+  const showAddModal = () => setIsAddModalVisible(true);
+  const hideAddModal = () => setIsAddModalVisible(false);
+  const showEditModal = () => setIsEditModalVisible(true);
+  const hideEditModal = () => setIsEditModalVisible(false);
+
+  const handleDeleteIngredient = async (ingredientId: string) => {
+    // Firestoreから該当のingredientを削除
+    const ingredientRef = doc(db, "ingredients", ingredientId);
+    await deleteDoc(ingredientRef);
+    // リストを更新
+    fetchIngredients();
+  };
+
+  useEffect(() => {
+    console.log("現在の食材リスト状態:", ingredients); // 状態が更新された後にログを出力
+  }, [ingredients]); // 依存配列に `ingredients` を指定
+
+  useEffect(() => {
+    fetchIngredients();
+  }, []); // 依存配列を空にして、コンポーネントのマウント時にのみ実行
+
+  const [editMode, setEditMode] = useState(false); // 編集モードのフラグ
+
+  // 食材をタップしたときの処理（既存の関数を修正）
+  const handleIngredientTap = (ingredient: Ingredient) => {
+    if (!isSwiping) {
+      setSelectedItem(ingredient);
+      setDialogVisible(true); // ダイアログを表示
+    }
+  };
+
+  // 食材の編集画面を表示する関数
+  const handleEditIngredient = () => {
+    setEditMode(true);
+    showEditModal(); // 編集モーダルを表示
+    hideItemDialog(); // 詳細ダイアログを非表示
+  };
 
   return (
     <Provider>
@@ -91,6 +159,16 @@ export const Stock = memo(() => {
       </Appbar.Header>
 
       <Portal>
+        {/* 追加用モーダル */}
+        <Modal
+          visible={isAddModalVisible}
+          onDismiss={hideAddModal}
+          contentContainerStyle={styles.stockContainer}
+        >
+          <AddUpdateStock hideModal={hideAddModal} onAdd={fetchIngredients} />
+        </Modal>
+
+        {/* 編集用モーダル */}
         {/* カテゴリ編集画面 */}
         <Modal
           visible={categoryVisible}
@@ -102,23 +180,35 @@ export const Stock = memo(() => {
         </Modal>
 
         <Modal
-          visible={visible}
-          onDismiss={hideModal}
-          contentContainerStyle={styles.containerStyle}
+          visible={isEditModalVisible}
+          onDismiss={hideEditModal}
+          contentContainerStyle={styles.stockContainer}
         >
+
           <AddUpdateStock
             hideModal={hideModal}
             addIngredientCategory={addIngredientCategory}
           />
           <Button onPress={hideModal}>Done</Button>
        
->>>>>>> master
+
+          {selectedItem && (
+            <EditStock
+              ingredient={selectedItem}
+              hideModal={hideEditModal}
+              addIngredientCategory={addIngredientCategory}
+              onEditComplete={fetchIngredients}
+            />
+          )}
+
         </Modal>
 
         <Dialog visible={dialogVisible} onDismiss={hideItemDialog}>
           <Dialog.Title>{selectedItem?.ingredientName}</Dialog.Title>
           <Dialog.Content>
+
             <Text>消費期限: {selectedItem?.expiryDate instanceof Date ? selectedItem.expiryDate.toDateString() : selectedItem?.expiryDate}</Text>
+
             <Text>数量: {selectedItem?.quantity}</Text>
           </Dialog.Content>
           <Dialog.Actions>
@@ -128,44 +218,52 @@ export const Stock = memo(() => {
         </Dialog>
       </Portal>
       <View style={styles.stockContainer}>
-  <SwipeListView
-    data={ingredients}
-    onRowOpen={() => {
-      setIsSwiping(true);
-    }}
-    onRowClose={() => {
-      setIsSwiping(false);
-    }}
-    swipeGestureBegan={() => {
-      setIsSwiping(true);
-    }}
-    swipeGestureEnded={() => {
-      setIsSwiping(true);
-    }}
-    
-    renderItem={(data, rowMap) => (
-      <TouchableRipple
-      onPress={() => {
-        if (!isSwiping) {
-          handleIngredientTap(data.item);
-        }
-      }}
-        style={styles.stockRipple}
-      >
-        <View>
-          <Text style={styles.stockItemText}>{data.item.ingredientName}</Text>
-        </View>
-      </TouchableRipple>
-    )}
-    
-    renderHiddenItem={(data, rowMap) => (
-      <View style={styles.rowBack}>
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => handleDeleteIngredient(data.item.id)}
-        >
-          <Text style={styles.deleteButtonText}>削除</Text>
-        </TouchableOpacity>
+
+        <SwipeListView
+          data={ingredients}
+          onRowOpen={() => {
+            setIsSwiping(true);
+          }}
+          onRowClose={() => {
+            setIsSwiping(false);
+          }}
+          swipeGestureBegan={() => {
+            setIsSwiping(true);
+          }}
+          swipeGestureEnded={() => {
+            setIsSwiping(true);
+          }}
+          renderItem={(data, rowMap) => (
+            <TouchableRipple
+              onPress={() => {
+                if (!isSwiping) {
+                  handleIngredientTap(data.item);
+                }
+              }}
+              style={styles.stockRipple}
+            >
+              <View>
+                <Text style={styles.stockItemText}>
+                  {data.item.ingredientName}
+                </Text>
+              </View>
+            </TouchableRipple>
+          )}
+          renderHiddenItem={(data, rowMap) => (
+            <View style={styles.rowBack}>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => handleDeleteIngredient(data.item.id)}
+              >
+                <Text style={styles.deleteButtonText}>削除</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          leftOpenValue={0}
+          rightOpenValue={-75}
+          disableRightSwipe
+        />
+
       </View>
     )}
     leftOpenValue={0} 
