@@ -1,14 +1,14 @@
 import { useState, useEffect, memo, useCallback } from "react";
 import { View } from "react-native";
 import { Button } from "react-native-paper";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { db, auth } from "../firebase";
 
 import AddStock from "./components/addStock";
 import ShowDate from "./components/showDate";
 import CountButton from "./components/countButton";
 import { itemProps } from "./components/addStock";
 
-import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { db, auth } from "../firebase";
 import { useCategories } from "./components/useCategories";
 
 // Firestoreに食材データを追加
