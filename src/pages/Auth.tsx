@@ -9,7 +9,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
-import styles from "./style/Styles";
+import styles from "../style/Styles";
 
 type RootStackParamList = {
   UserPage: { userId: string };

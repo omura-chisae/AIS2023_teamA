@@ -2,7 +2,7 @@ import { Button } from "react-native-paper";
 import React, { useState, memo } from "react";
 import { Text, View } from "react-native";
 
-import styles from "../style/Styles";
+import styles from "../../style/Styles";
 
 type CountButtonProps = {
   quantity: number;

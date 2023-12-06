@@ -3,9 +3,10 @@ import type { User } from "firebase/auth";
 import { auth } from "./src/firebase";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { PaperProvider } from "react-native-paper";
 
 import AuthContext from "./src/AuthContext";
-
+import { Theme } from "./src/style/Theme";
 
 type UserType = User | null;
 
@@ -25,9 +26,11 @@ function App() {
   }, []);
 
   return (
-    <NavigationContainer>
-      <AuthContext user={user} />
-    </NavigationContainer>
+    <PaperProvider theme={Theme}>
+      <NavigationContainer>
+        <AuthContext user={user} />
+      </NavigationContainer>
+    </PaperProvider>
   );
 }
 
