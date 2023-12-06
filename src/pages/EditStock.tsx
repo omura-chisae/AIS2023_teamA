@@ -20,7 +20,7 @@ type EditStockProps = {
   ingredient: Ingredient;
   hideModal: () => void;
   addIngredientCategory: { id: string; title: string; checked: boolean }[];
-  onEditComplete: () => Promise<void>;
+  onEditComplete?: () => Promise<void>;
 };
 
 export const EditStock: React.FC<EditStockProps> = ({
@@ -39,8 +39,9 @@ export const EditStock: React.FC<EditStockProps> = ({
 
   const handleUpdateIngredient = async () => {
     // Firestoreで既存の食材を更新
-    const ingredientRef = doc(db, "ingredients", ingredient.id);
+    // const ingredientRef = doc(db, "ingredients", ingredient.id);
     try {
+      const ingredientRef = doc(db, "ingredients", ingredient.id);
       await updateDoc(ingredientRef, {
         ingredientName,
         categories: categoryLists,
@@ -48,7 +49,9 @@ export const EditStock: React.FC<EditStockProps> = ({
         quantity,
       });
       hideModal(); // 成功時にモーダルを閉じる
-      onEditComplete(); // 編集が完了したらコールバックを呼び出す
+      if (onEditComplete) {
+        onEditComplete(); // 編集が完了したらコールバックを呼び出す
+      }
     } catch (error) {
       console.error("Error updating ingredient: ", error);
       // エラーハンドリングをここで行う
