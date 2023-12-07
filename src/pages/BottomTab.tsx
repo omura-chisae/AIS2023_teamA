@@ -4,17 +4,19 @@ import { Stock } from "./Stock";
 import { SearchRecipes } from "./SearchRecipes";
 import { Settings } from "./Settings";
 import { PaperProvider } from "react-native-paper";
-import theme from "../style/themes";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { Theme } from "./style/theme";
 import { Animated, TouchableOpacity, Platform } from "react-native";
+import { StyleSheet } from "react-native";
+
+import { Theme } from "./style/theme";
 
 interface AnimatedIconProps {
   name: string;
   color: string;
   size: number;
   focused: boolean;
+  iconSet: "MaterialIcons" | "FontAwesome5";
 }
 
 const AnimatedIcon: React.FC<AnimatedIconProps> = ({
@@ -22,20 +24,23 @@ const AnimatedIcon: React.FC<AnimatedIconProps> = ({
   color,
   size,
   focused,
+  iconSet,
 }) => {
-  // アニメーション値の初期化
   const scale = new Animated.Value(1);
 
-  // アクティブなときのアニメーション
   Animated.spring(scale, {
-    toValue: focused ? 1.15 : 1, // アクティブな時は少し大きく
+    toValue: focused ? 1.2 : 1,
     friction: 3,
     useNativeDriver: true,
   }).start();
 
+  // アイコンセットに基づいてアイコンコンポーネントを選択
+  const IconComponent =
+    iconSet === "FontAwesome5" ? FontAwesome5 : MaterialIcons;
+
   return (
     <Animated.View style={{ transform: [{ scale }] }}>
-      <MaterialIcons name={name} color={color} size={size} />
+      <IconComponent name={name} color={color} size={size} />
     </Animated.View>
   );
 };
@@ -48,6 +53,9 @@ export const BottomTab = memo(() => {
       screenOptions={{
         tabBarActiveTintColor: Theme.colors.primary,
         tabBarInactiveTintColor: "gray",
+        tabBarLabelPosition: "below-icon", // ラベルの位置をアイコンの下に設定
+        tabBarLabelStyle: styles.tabBarLabel, // ラベルのスタイルをカスタマイズ
+        tabBarIconStyle: styles.tabBarIcon, // アイコンのスタイルをカスタマイズ
         tabBarButton: (props) => (
           <TouchableOpacity {...props}>{props.children}</TouchableOpacity>
         ),
@@ -63,19 +71,22 @@ export const BottomTab = memo(() => {
               color={color}
               size={25}
               focused={focused}
+              iconSet="MaterialIcons"
             />
           ),
         }}
       />
       <Tab.Screen
-        name="SearchRecipes"
+        name="Recipes"
         component={SearchRecipes}
         options={{
           tabBarIcon: ({ focused, color }) => (
-            <FontAwesome5
+            <AnimatedIcon
               name="utensils"
               color={color}
-              size={focused ? 30 : 25}
+              size={25}
+              focused={focused}
+              iconSet="FontAwesome5"
             />
           ),
         }}
@@ -85,14 +96,26 @@ export const BottomTab = memo(() => {
         component={Settings}
         options={{
           tabBarIcon: ({ focused, color }) => (
-            <MaterialIcons
+            <AnimatedIcon
               name="settings"
               color={color}
-              size={focused ? 30 : 25}
+              size={25}
+              focused={focused}
+              iconSet="MaterialIcons"
             />
           ),
         }}
       />
     </Tab.Navigator>
   );
+});
+
+const styles = StyleSheet.create({
+  tabBarLabel: {
+    fontSize: 12, // フォントサイズの設定
+    textAlign: "center", // テキストを中央揃え
+  },
+  tabBarIcon: {
+    marginBottom: 0, // アイコンの下マージンを設定
+  },
 });
