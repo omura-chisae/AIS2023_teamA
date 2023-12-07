@@ -1,9 +1,22 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { memo } from "react";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import { Button, Checkbox, RadioButton, Text } from "react-native-paper";
 
+import { useUserIngredients } from "./CustomHook/useUserIngredients";
+
 export const SearchRecipes = memo(() => {
+  const userIngredients = useUserIngredients();
+
+  useEffect(() => {
+    setIngredients(
+      userIngredients.map((ingredient) => ({
+        title: ingredient.ingredientName,
+        select: false,
+      }))
+    );
+  }, [userIngredients]); // userIngredients が変更されたときに実行
+
   const initialKinds = [
     { category: "種類", title: "主菜", select: false },
     { title: "主食", select: false },
@@ -22,16 +35,11 @@ export const SearchRecipes = memo(() => {
     { title: "スイーツ", select: false },
   ];
 
-  const initialIngredients = [
-    { title: "豚肉", select: false },
-    { title: "玉ねぎ", select: false },
-    { title: "ひき肉", select: false },
-    { title: "キャベツ", select: false },
-    { title: "パスタ", select: false },
-    { title: "トマト", select: false },
-    { title: "ご飯", select: false },
-    { title: "しめじ", select: false },
-  ];
+  // Firestoreから取得した食材名で初期化
+  const initialIngredients = userIngredients.map((ingredient) => ({
+    title: ingredient.ingredientName,
+    select: false,
+  }));
 
   const initialTimes = [
     { title: "30分未満", select: false },
@@ -62,9 +70,12 @@ export const SearchRecipes = memo(() => {
   };
 
   const handleRadioChange = (index: number, category: string) => {
+    const items = getCategoryItems(category);
+    const isAlreadySelected = items[index].select;
+
     const updatedItems = getCategoryItems(category).map((item, i) => ({
       ...item,
-      select: i === index,
+      select: i === index ? !isAlreadySelected : false,
     }));
     switch (category) {
       case "種類":
@@ -91,6 +102,32 @@ export const SearchRecipes = memo(() => {
       default:
         return [];
     }
+  };
+
+  const showIngredients = () => {
+    const selectedKinds = kinds.find((item) => item.select)?.title;
+    const selectedGenre = genre.find((item) => item.select)?.title;
+    const selectedIngredients = ingredients.filter((item) => item.select);
+    const selectedTimes = times.filter((item) => item.select);
+
+    const displayIngredients = selectedIngredients.map((ingredient) => {
+      const found = userIngredients.find(
+        (ui) => ui.ingredientName === ingredient.title
+      );
+      return found
+        ? `${ingredient.title} (${found.quantity})`
+        : ingredient.title;
+    });
+
+    const timeText =
+      selectedTimes.length === 2
+        ? "時間の制限なし"
+        : selectedTimes.map((t) => t.title).join(", ");
+
+    const message = `種類: ${selectedKinds}, ジャンル: ${selectedGenre}, 食材: ${displayIngredients.join(
+      ", "
+    )}, 時間: ${timeText}`;
+    alert(message);
   };
 
   return (
@@ -123,9 +160,11 @@ export const SearchRecipes = memo(() => {
         ))}
       </View>
       <Text>食材</Text>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <View
+        style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center" }}
+      >
         {ingredients.map((item, index) => (
-          <View key={index}>
+          <View key={index} style={{ margin: 4 }}>
             <Checkbox.Item
               label={item.title}
               status={item.select ? "checked" : "unchecked"}
@@ -149,7 +188,10 @@ export const SearchRecipes = memo(() => {
       </View>
 
       <Button mode="contained">提案</Button>
+      <br />
+      <Button mode="contained" onPress={showIngredients}>
+        提案するための情報
+      </Button>
     </View>
   );
 });
-

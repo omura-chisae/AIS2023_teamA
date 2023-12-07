@@ -25,13 +25,13 @@ import { db, auth } from "../firebase";
 
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
-
 import { AddUpdateStock } from "./AddUpdateStock";
 import { EditStock, Ingredient } from "./EditStock";
 import styles from "../style/Styles";
 
 import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
+import { useUserIngredients } from "./CustomHook/useUserIngredients";
 
 const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
 
@@ -49,7 +49,7 @@ export const Stock = memo(() => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isSwiping, setIsSwiping] = useState(false);
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const ingredients = useUserIngredients();
 
   // カテゴリ編集画面用
   const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
@@ -70,26 +70,6 @@ export const Stock = memo(() => {
     checked: false,
   }));
 
-  // Stock.tsx 内の fetchIngredients 関数
-  const fetchIngredients = async () => {
-    const q = query(
-      collection(db, "ingredients"),
-      where("userId", "==", auth.currentUser?.uid)
-    );
-    const querySnapshot = await getDocs(q);
-    const items: Ingredient[] = [];
-    querySnapshot.forEach((doc) => {
-      let data = doc.data() as Ingredient;
-      // expiryDateがTimestampの場合、Dateオブジェクトに変換
-      if (data.expiryDate && data.expiryDate instanceof Timestamp) {
-        data = { ...data, expiryDate: data.expiryDate.toDate() };
-      }
-      items.push({ ...data, id: doc.id });
-    });
-    console.log("取得した食材データ:", items);
-    setIngredients(items);
-  };
-
   const showAddModal = () => setIsAddModalVisible(true);
   const hideAddModal = () => setIsAddModalVisible(false);
   const showEditModal = () => setIsEditModalVisible(true);
@@ -100,19 +80,13 @@ export const Stock = memo(() => {
     const ingredientRef = doc(db, "ingredients", ingredientId);
     await deleteDoc(ingredientRef);
     // リストを更新
-    fetchIngredients();
   };
 
   useEffect(() => {
     console.log("現在の食材リスト状態:", ingredients); // 状態が更新された後にログを出力
   }, [ingredients]); // 依存配列に `ingredients` を指定
 
-  useEffect(() => {
-    fetchIngredients();
-  }, []); // 依存配列を空にして、コンポーネントのマウント時にのみ実行
-
   const [editMode, setEditMode] = useState(false); // 編集モードのフラグ
-
   // 食材をタップしたときの処理（既存の関数を修正）
   const handleIngredientTap = (ingredient: Ingredient) => {
     if (!isSwiping) {
@@ -182,7 +156,6 @@ export const Stock = memo(() => {
         >
           <AddUpdateStock
             hideModal={hideAddModal}
-            onAdd={fetchIngredients}
             addIngredientCategory={addIngredientCategory}
           />
         </Modal>
@@ -208,7 +181,6 @@ export const Stock = memo(() => {
               ingredient={selectedItem}
               hideModal={hideEditModal}
               addIngredientCategory={addIngredientCategory}
-              onEditComplete={fetchIngredients}
             />
           )}
         </Modal>
