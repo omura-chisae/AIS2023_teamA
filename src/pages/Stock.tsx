@@ -48,7 +48,7 @@ export const Stock = memo(() => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isSwiping, setIsSwiping] = useState(false);
-  // const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const ingredients = useUserIngredients();
 
   // カテゴリ編集画面用
   const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
@@ -69,8 +69,6 @@ export const Stock = memo(() => {
     checked: false,
   }));
 
-  const ingredients = useUserIngredients();
-
   const showAddModal = () => setIsAddModalVisible(true);
   const hideAddModal = () => setIsAddModalVisible(false);
   const showEditModal = () => setIsEditModalVisible(true);
@@ -88,7 +86,6 @@ export const Stock = memo(() => {
   }, [ingredients]); // 依存配列に `ingredients` を指定
 
   const [editMode, setEditMode] = useState(false); // 編集モードのフラグ
-
   // 食材をタップしたときの処理（既存の関数を修正）
   const handleIngredientTap = (ingredient: Ingredient) => {
     if (!isSwiping) {
