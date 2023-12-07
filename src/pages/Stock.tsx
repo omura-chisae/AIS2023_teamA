@@ -79,6 +79,8 @@ export const Stock = memo(() => {
     const ingredientRef = doc(db, "ingredients", ingredientId);
     await deleteDoc(ingredientRef);
     // リストを更新
+
+    setIsSwiping(false);
   };
 
   useEffect(() => {
@@ -189,9 +191,9 @@ export const Stock = memo(() => {
           <Dialog.Content>
             <Text>
               消費期限:{" "}
-              {selectedItem?.expiryDate instanceof Date
-                ? selectedItem.expiryDate.toDateString()
-                : selectedItem?.expiryDate}
+              {selectedItem?.expiryDate
+                ? displayDateInJapanese(selectedItem.expiryDate)
+                : "日付なし"}
             </Text>
 
             <Text>数量: {selectedItem?.quantity}</Text>
@@ -216,7 +218,7 @@ export const Stock = memo(() => {
             setIsSwiping(true);
           }}
           swipeGestureEnded={() => {
-            setIsSwiping(true);
+            setIsSwiping(false); // ここをfalseに修正
           }}
           renderItem={(data, rowMap) => (
             <TouchableRipple
