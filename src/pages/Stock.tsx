@@ -27,7 +27,8 @@ import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { AddUpdateStock } from "./AddUpdateStock";
 import { EditStock, Ingredient } from "./EditStock";
-import styles from "./style/Styles";
+import styles from "../style/Styles";
+
 import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
