@@ -5,7 +5,7 @@ import { SearchRecipes } from "./SearchRecipes";
 import { Stock } from "./Stock";
 import { Settings } from "./Settings";
 import { PaperProvider } from "react-native-paper";
-import theme from "../style/theme";
+import theme from "../style/themes";
 
 export const BottomTab = memo(() => {
   const Tab = createBottomTabNavigator();
