@@ -3,7 +3,7 @@ import type { User } from "firebase/auth";
 import { auth } from "./src/firebase";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Provider as PaperProvider } from "react-native-paper";
+import { PaperProvider } from "react-native-paper";
 
 import AuthContext from "./src/AuthContext";
 import { Theme } from "./src/pages/style/theme";

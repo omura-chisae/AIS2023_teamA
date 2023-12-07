@@ -3,6 +3,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Stock } from "./Stock";
 import { SearchRecipes } from "./SearchRecipes";
 import { Settings } from "./Settings";
+import { PaperProvider } from "react-native-paper";
+import theme from "../style/themes";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { Theme } from "./style/theme";
@@ -94,66 +96,3 @@ export const BottomTab = memo(() => {
     </Tab.Navigator>
   );
 });
-
-// import { memo } from "react";
-// import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-// import { Stock } from "./Stock";
-// import { SearchRecipes } from "./SearchRecipes";
-// import { Settings } from "./Settings";
-// import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-// import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-
-// import { Theme } from "./style/theme";
-
-// export const BottomTab = memo(() => {
-//   const Tab = createBottomTabNavigator();
-
-//   return (
-//     <Tab.Navigator
-//       screenOptions={{
-//         tabBarActiveTintColor: Theme.colors.primary,
-//         tabBarInactiveTintColor: "gray",
-//       }}
-//     >
-//       <Tab.Screen
-//         name="Stock"
-//         component={Stock}
-//         options={{
-//           tabBarIcon: ({ focused, color }) => (
-//             <MaterialIcons
-//               name="kitchen"
-//               color={color}
-//               size={focused ? 30 : 25}
-//             />
-//           ),
-//         }}
-//       />
-//       <Tab.Screen
-//         name="SearchRecipes"
-//         component={SearchRecipes}
-//         options={{
-//           tabBarIcon: ({ focused, color }) => (
-//             <FontAwesome5
-//               name="utensils"
-//               color={color}
-//               size={focused ? 30 : 25}
-//             />
-//           ),
-//         }}
-//       />
-//       <Tab.Screen
-//         name="Settings"
-//         component={Settings}
-//         options={{
-//           tabBarIcon: ({ focused, color }) => (
-//             <MaterialIcons
-//               name="settings"
-//               color={color}
-//               size={focused ? 30 : 25}
-//             />
-//           ),
-//         }}
-//       />
-//     </Tab.Navigator>
-//   );
-// });
