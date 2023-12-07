@@ -5,12 +5,12 @@ import { SearchRecipes } from "./SearchRecipes";
 import { Stock } from "./Stock";
 import { Settings } from "./Settings";
 import { PaperProvider } from "react-native-paper";
-import { Theme } from "../style/Theme";
+import theme from "../style/theme";
 
 export const BottomTab = memo(() => {
   const Tab = createBottomTabNavigator();
   return (
-    <PaperProvider theme={Theme}>
+    <PaperProvider theme={theme}>
       <Tab.Navigator
         tabBarOptions={{
           activeTintColor: "#fff",

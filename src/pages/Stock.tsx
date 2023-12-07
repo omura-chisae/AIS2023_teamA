@@ -33,6 +33,8 @@ import styles from "../style/Styles";
 import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
 
+const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
+
 export const Stock = memo(() => {
   const [visible, setVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -126,6 +128,21 @@ export const Stock = memo(() => {
     hideItemDialog(); // 詳細ダイアログを非表示
   };
 
+  // 日付を日本語形式で表示する関数
+  const displayDateInJapanese = (date: Date) => {
+    if (date instanceof Date) {
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1; // 月は0から始まるため、1を加える
+      const day = date.getDate();
+      const weekDay = weekDays[date.getDay()]; // 曜日を取得
+
+      // 日本語の日付形式（例：2023年1月1日（日））で返す
+      return `${year}年${month}月${day}日（${weekDay}）`;
+    } else {
+      return date;
+    }
+  };
+
   return (
     <Provider>
       <Appbar.Header>
@@ -196,12 +213,6 @@ export const Stock = memo(() => {
           )}
         </Modal>
 
-        {/* <AddUpdateStock
-          hideModal={hideAddModal}
-          onAdd={fetchIngredients}
-          addIngredientCategory={addIngredientCategory}
-        /> */}
-
         <Dialog visible={dialogVisible} onDismiss={hideItemDialog}>
           <Dialog.Title>{selectedItem?.ingredientName}</Dialog.Title>
           <Dialog.Content>
@@ -220,8 +231,9 @@ export const Stock = memo(() => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-      <View style={styles.stockContainer}>
+      <View style={{ padding: 20, backgroundColor: "white", flex: 1 }}>
         <SwipeListView
+          style={{ flex: 1 }}
           data={ingredients}
           onRowOpen={() => {
             setIsSwiping(true);
@@ -247,6 +259,9 @@ export const Stock = memo(() => {
               <View>
                 <Text style={styles.stockItemText}>
                   {data.item.ingredientName}
+                </Text>
+                <Text style={styles.stockItemExpiryDate}>
+                  消費期限: {displayDateInJapanese(data.item.expiryDate)}
                 </Text>
               </View>
             </TouchableRipple>
