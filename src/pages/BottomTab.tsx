@@ -11,9 +11,10 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { Animated, TouchableOpacity, Platform, Text, View } from "react-native";
 import { StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Theme } from "./style/theme";
-import { useNavigation } from "@react-navigation/native";
 
 interface AnimatedIconProps {
   name: string;
@@ -41,7 +42,7 @@ const AnimatedIcon: React.FC<AnimatedIconProps> = ({
     }).start();
 
     Animated.spring(translateY, {
-      toValue: focused ? -10 : 0, // フォーカス時は上に浮かぶ
+      toValue: focused ? -20 : 0, // フォーカス時は上に浮かぶ
       friction: 3,
       useNativeDriver: true,
     }).start();
@@ -91,104 +92,106 @@ export const BottomTab = memo(() => {
   const Tab = createBottomTabNavigator();
 
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarButton: (props) => {
-          let iconName = "default-icon"; // 初期値を設定
-          let iconSet: "MaterialIcons" | "FontAwesome5" = "MaterialIcons"; // 初期値を設定
-          let label = "";
+    <SafeAreaView style={{ flex: 1 }}>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          headerShown: false,
+          tabBarButton: (props) => {
+            let iconName = "default-icon"; // 初期値を設定
+            let iconSet: "MaterialIcons" | "FontAwesome5" = "MaterialIcons"; // 初期値を設定
+            let label = "";
 
-          switch (route.name) {
-            case "Stock":
-              iconName = "kitchen";
-              iconSet = "MaterialIcons";
-              label = "Stock";
-              break;
-            case "SearchRecipes":
-              iconName = "utensils";
-              iconSet = "FontAwesome5";
-              label = "SearchRecipes";
-              break;
-            case "Settings":
-              iconName = "settings";
-              iconSet = "MaterialIcons";
-              label = "Settings";
-              break;
-            // 他のケース...
-            default:
-              // デフォルトのアイコン設定
-              break;
-          }
+            switch (route.name) {
+              case "Stock":
+                iconName = "kitchen";
+                iconSet = "MaterialIcons";
+                label = "Stock";
+                break;
+              case "SearchRecipes":
+                iconName = "utensils";
+                iconSet = "FontAwesome5";
+                label = "SearchRecipes";
+                break;
+              case "Settings":
+                iconName = "settings";
+                iconSet = "MaterialIcons";
+                label = "Settings";
+                break;
+              // 他のケース...
+              default:
+                // デフォルトのアイコン設定
+                break;
+            }
 
-          return (
-            <TabButtonWrapper
-              {...props}
-              iconName={iconName}
-              iconSet={iconSet}
-              label={label}
-            />
-          );
-        },
-        tabBarStyle: {
-          height: 70, // タブバーの高さを設定
-          backgroundColor: "#FEF9E7", // またはお好みの背景色
-          borderTopWidth: 0, // 上の境界線を消す
+            return (
+              <TabButtonWrapper
+                {...props}
+                iconName={iconName}
+                iconSet={iconSet}
+                label={label}
+              />
+            );
+          },
+          tabBarStyle: {
+            height: 70, // タブバーの高さを設定
+            backgroundColor: "#FEF9E7", // またはお好みの背景色
+            borderTopWidth: 0, // 上の境界線を消す
 
-          // 他のスタイル設定...
-        },
+            // 他のスタイル設定...
+          },
 
-        tabBarActiveTintColor: Theme.colors.primary,
-        tabBarInactiveTintColor: "gray",
-        // 他の設定...
-      })}
-    >
-      <Tab.Screen
-        name="Stock"
-        component={Stock}
-        options={{
-          tabBarIcon: ({ focused, color }) => (
-            <AnimatedIcon
-              name="kitchen"
-              color={color}
-              size={25}
-              focused={focused}
-              iconSet="MaterialIcons"
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="SearchRecipes"
-        component={SearchRecipes}
-        options={{
-          tabBarIcon: ({ focused, color }) => (
-            <AnimatedIcon
-              name="utensils"
-              color={color}
-              size={25}
-              focused={focused}
-              iconSet="FontAwesome5"
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Settings"
-        component={Settings}
-        options={{
-          tabBarIcon: ({ focused, color }) => (
-            <AnimatedIcon
-              name="settings"
-              color={color}
-              size={25}
-              focused={focused}
-              iconSet="MaterialIcons"
-            />
-          ),
-        }}
-      />
-    </Tab.Navigator>
+          tabBarActiveTintColor: Theme.colors.primary,
+          tabBarInactiveTintColor: "gray",
+          // 他の設定...
+        })}
+      >
+        <Tab.Screen
+          name="Stock"
+          component={Stock}
+          options={{
+            tabBarIcon: ({ focused, color }) => (
+              <AnimatedIcon
+                name="kitchen"
+                color={color}
+                size={25}
+                focused={focused}
+                iconSet="MaterialIcons"
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="SearchRecipes"
+          component={SearchRecipes}
+          options={{
+            tabBarIcon: ({ focused, color }) => (
+              <AnimatedIcon
+                name="utensils"
+                color={color}
+                size={25}
+                focused={focused}
+                iconSet="FontAwesome5"
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Settings"
+          component={Settings}
+          options={{
+            tabBarIcon: ({ focused, color }) => (
+              <AnimatedIcon
+                name="settings"
+                color={color}
+                size={25}
+                focused={focused}
+                iconSet="MaterialIcons"
+              />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+    </SafeAreaView>
   );
 });
 
@@ -222,9 +225,11 @@ const TabButton = (
         {focused && (
           <Text
             style={{
+              position: "absolute", // ポジションを絶対位置に
               color: "black",
               fontSize: 15,
-              marginTop: 1, // アイコンとテキストの間隔
+              alignSelf: "center", // 親要素に対して中央に配置
+              bottom: 0,
             }}
           >
             {label}

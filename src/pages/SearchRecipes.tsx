@@ -131,7 +131,7 @@ export const SearchRecipes = memo(() => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#F8F9F9" }}>
       <Text>種類</Text>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         {kinds.map((item, index) => (

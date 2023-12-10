@@ -121,7 +121,7 @@ export const Stock = memo(() => {
 
   return (
     <Provider>
-      <Appbar.Header>
+      <Appbar.Header style={{ backgroundColor: "#DDAF56" }}>
         {isSearchBarVisible ? (
           <Searchbar
             placeholder="Search"
@@ -205,9 +205,9 @@ export const Stock = memo(() => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-      <View style={{ padding: 20, backgroundColor: "white", flex: 1 }}>
+      <View style={{ backgroundColor: "#F8F9F9", flex: 1, maxHeight: "100%" }}>
         <SwipeListView
-          style={{ flex: 1 }}
+          style={{ flex: 1, backgroundColor: "#F8F9F9" }}
           data={ingredients}
           onRowOpen={() => {
             setIsSwiping(true);
@@ -228,7 +228,7 @@ export const Stock = memo(() => {
                   handleIngredientTap(data.item);
                 }
               }}
-              style={styles.stockRipple}
+              style={[styles.stockRipple, { backgroundColor: "#F8F9F9" }]}
             >
               <View>
                 <Text style={styles.stockItemText}>
