@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useCallback } from "react";
+import React, { useState, useEffect, memo, useCallback, useMemo } from "react";
 import {
   Modal,
   Portal,
@@ -8,9 +8,19 @@ import {
   Dialog,
   TouchableRipple,
   Button,
+  AnimatedFAB,
 } from "react-native-paper";
-
-import { View, Text } from "react-native";
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  Animated,
+  StyleProp,
+  ViewStyle,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import {
   collection,
@@ -32,6 +42,7 @@ import styles from "../style/Styles";
 import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
+import theme from "../style/themes";
 
 const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
 
@@ -50,9 +61,10 @@ export const Stock = memo(() => {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isSwiping, setIsSwiping] = useState(false);
   const ingredients = useUserIngredients();
+  const [isExtended, setIsExtended] = React.useState(true);
 
   // カテゴリ編集画面用
-  const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
+  // const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
   const hideCategoryModal = useCallback(() => setCategoryVisible(false), []);
   const [categoryVisible, setCategoryVisible] = useState(false);
 
@@ -119,6 +131,66 @@ export const Stock = memo(() => {
     }
   };
 
+  // 選択されたカテゴリや検索クエリに基づいて食材をフィルタリングする関数
+  const filteredIngredients = useMemo(() => {
+    return ingredients.filter((ingredient) => {
+      // カテゴリでフィルタリング
+      if (
+        selectedCategory &&
+        !ingredient.categories.some(
+          (category) => category.id === selectedCategory
+        )
+      ) {
+        return false;
+      }
+      // 検索クエリでフィルタリング
+      if (
+        searchQuery &&
+        !ingredient.ingredientName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [ingredients, selectedCategory, searchQuery]);
+
+  // スクロールイベントハンドラ
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    // スクロールイベントの型を正しく指定
+    const currentScrollPosition = Math.floor(event.nativeEvent.contentOffset.y);
+    setIsExtended(currentScrollPosition <= 0);
+  };
+
+  // AnimatedFABのサイズを調整
+  const fabSize = 56;
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const showCategoryModal = useCallback(() => {
+    setCategoryVisible(true);
+    setModalVisible(true); // モーダル表示状態を更新
+  }, []);
+
+  // AnimatedFABのスタイルを設定
+  const fabStyle: StyleProp<ViewStyle> = {
+    position: "absolute",
+    // margin: 16,
+    right: 100,
+    bottom: 16, // 位置を下に調整
+    // height: 80, // 高さを大きくする
+    // borderRadius: 40, // borderRadiusを半分のサイズにして丸みを保持
+    backgroundColor: "#DDAF56", // FABの背景色
+    opacity: modalVisible ? 0.5 : 1, // モーダルが表示されている時は透明度を下げる
+  };
+
+  const searchBarTheme = {
+    ...theme, // 既存のテーマを展開
+    colors: {
+      ...theme.colors, // 既存の色を展開
+      primary: "#F7DC6F", // 検索バーに適用する新しい色
+    },
+  };
   return (
     <Provider>
       <Appbar.Header style={{ backgroundColor: "#DDAF56" }}>
@@ -130,6 +202,7 @@ export const Stock = memo(() => {
             autoFocus
             onBlur={closeSearchBar}
             style={styles.stockSearchInput}
+            theme={searchBarTheme}
           />
         ) : (
           <>
@@ -204,11 +277,26 @@ export const Stock = memo(() => {
             <Button onPress={hideItemDialog}>閉じる</Button>
           </Dialog.Actions>
         </Dialog>
+        <AnimatedFAB
+          icon={"plus"}
+          label={"食材の追加"}
+          extended={isExtended}
+          onPress={() => {
+            if (!modalVisible) {
+              showAddModal(); // モーダルが表示されていない時のみ機能する
+            }
+          }}
+          visible={!isAddModalVisible && !isEditModalVisible && !dialogVisible} // 常に表示する場合はtrue
+          animateFrom={"left"}
+          iconMode={"dynamic"}
+          style={[fabStyle]}
+        />
       </Portal>
       <View style={{ backgroundColor: "#F8F9F9", flex: 1, maxHeight: "100%" }}>
         <SwipeListView
+          onScroll={onScroll}
           style={{ flex: 1, backgroundColor: "#F8F9F9" }}
-          data={ingredients}
+          data={filteredIngredients}
           onRowOpen={() => {
             setIsSwiping(true);
           }}

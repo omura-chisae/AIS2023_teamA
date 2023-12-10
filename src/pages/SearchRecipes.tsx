@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { memo } from "react";
 import { Alert, View } from "react-native";
 import { Button, Checkbox, RadioButton, Text } from "react-native-paper";
+import { ScrollView } from "react-native-gesture-handler";
 
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
 
@@ -131,7 +132,9 @@ export const SearchRecipes = memo(() => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#F8F9F9" }}>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: "#F8F9F9", paddingBottom: 70 }}
+    >
       <Text>種類</Text>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         {kinds.map((item, index) => (
@@ -192,6 +195,6 @@ export const SearchRecipes = memo(() => {
       <Button mode="contained" onPress={showIngredients}>
         提案するための情報
       </Button>
-    </View>
+    </ScrollView>
   );
 });
