@@ -173,6 +173,7 @@ export const BottomTab = memo(() => {
                 iconSet="FontAwesome5"
               />
             ),
+            tabBarLabel: "Recipes", // このように直接ラベルを設定
           }}
         />
         <Tab.Screen
@@ -205,8 +206,9 @@ const TabButton = (
   const navigation = useNavigation();
   const { iconName, iconSet, accessibilityState, label } = props;
   const focused = accessibilityState?.selected ?? false;
+  const navigationLabel = label === "Recipes" ? "SearchRecipes" : label;
   const handlePress = () => {
-    navigation.navigate(label as never);
+    navigation.navigate(navigationLabel as never);
   };
 
   return (
@@ -248,6 +250,11 @@ const TabButtonWrapper = (
   }
 ) => {
   const { label } = props;
+  let customLabel = props.label;
+  if (props.label === "SearchRecipes") {
+    customLabel = "Recipes";
+  }
+
   // propsを使用してTabButtonと縦線を表示
   return (
     <View
@@ -259,7 +266,7 @@ const TabButtonWrapper = (
         height: "100%",
       }}
     >
-      <TabButton {...props} />
+      <TabButton {...props} label={customLabel} />
       {label !== "Settings" && (
         <View style={{ width: 1, height: "70%", backgroundColor: "#ddd" }} />
       )}
