@@ -241,6 +241,7 @@ const TabButtonWrapper = (
     label: string;
   }
 ) => {
+  const { label } = props;
   // propsを使用してTabButtonと縦線を表示
   return (
     <View
@@ -253,7 +254,9 @@ const TabButtonWrapper = (
       }}
     >
       <TabButton {...props} />
-      <View style={{ width: 1, height: "70%", backgroundColor: "#ddd" }} />
+      {label !== "Settings" && (
+        <View style={{ width: 1, height: "70%", backgroundColor: "#ddd" }} />
+      )}
     </View>
   );
 };
