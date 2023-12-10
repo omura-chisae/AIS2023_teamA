@@ -93,6 +93,7 @@ export const BottomTab = memo(() => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
+        headerShown: false,
         tabBarButton: (props) => {
           let iconName = "default-icon"; // 初期値を設定
           let iconSet: "MaterialIcons" | "FontAwesome5" = "MaterialIcons"; // 初期値を設定
@@ -131,7 +132,7 @@ export const BottomTab = memo(() => {
         },
         tabBarStyle: {
           height: 70, // タブバーの高さを設定
-          backgroundColor: "white", // またはお好みの背景色
+          backgroundColor: "#FEF9E7", // またはお好みの背景色
           borderTopWidth: 0, // 上の境界線を消す
 
           // 他のスタイル設定...
@@ -222,7 +223,7 @@ const TabButton = (
           <Text
             style={{
               color: "black",
-              fontSize: 18,
+              fontSize: 15,
               marginTop: 1, // アイコンとテキストの間隔
             }}
           >
