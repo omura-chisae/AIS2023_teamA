@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useCallback } from "react";
+import React, { useState, useEffect, memo, useCallback } from "react";
 import {
   Modal,
   Portal,
@@ -8,6 +8,7 @@ import {
   Dialog,
   TouchableRipple,
   Button,
+  Switch,
 } from "react-native-paper";
 
 import { View, Text } from "react-native";
@@ -55,6 +56,12 @@ export const Stock = memo(() => {
   const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
   const hideCategoryModal = useCallback(() => setCategoryVisible(false), []);
   const [categoryVisible, setCategoryVisible] = useState(false);
+
+  // RNPickerSelectでフィルターした食材リストを保存する変数
+  const [filteredIngredients, setFilteredIngredients] = useState(ingredients);
+  // ソートした食材リストを保存する変数
+  const [sortedIngredients, setSortedIngredients] = useState(ingredients);
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   // カテゴリを取得
   const fetchedCategories = useCategories();
@@ -143,6 +150,42 @@ export const Stock = memo(() => {
     }
   };
 
+  useEffect(() => {
+    // 選択したカテゴリを含む食材を抽出
+    if (selectedCategory) {
+      const updatedIngredients = ingredients.filter((ingredient) => {
+        return ingredient.categories.some(
+          (category) => category.id === selectedCategory
+        );
+      });
+      setFilteredIngredients(updatedIngredients);
+      setSortedIngredients(updatedIngredients);
+    } else {
+      setFilteredIngredients(ingredients);
+      setSortedIngredients(ingredients); // sortedIngredientsを参照してリスト表示するため代入しておく
+    }
+  }, [selectedCategory]);
+
+  const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
+
+  useEffect(() => {
+    // スイッチがオンの時に消費期限順に並び変える
+    if (isSwitchOn) {
+      const updatedIngredients = Array.from(filteredIngredients);
+      updatedIngredients.sort((a, b) => {
+        const expiryDateA =
+          a.expiryDate instanceof Date ? a.expiryDate.getTime() : 0;
+        const expiryDateB =
+          b.expiryDate instanceof Date ? b.expiryDate.getTime() : 0;
+        return expiryDateA - expiryDateB;
+      });
+      setSortedIngredients(updatedIngredients);
+    } else {
+      // スイッチがオフの時は元の順番（filteredIngredients）を代入
+      setSortedIngredients(filteredIngredients);
+    }
+  }, [isSwitchOn]);
+
   return (
     <Provider>
       <Appbar.Header>
@@ -169,6 +212,8 @@ export const Stock = memo(() => {
               />
             </View>
             <Appbar.Action icon="pencil" onPress={showCategoryModal} />
+            <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
+            <Text>消費期限順に並び変え</Text>
           </>
         )}
       </Appbar.Header>
@@ -234,7 +279,7 @@ export const Stock = memo(() => {
       <View style={{ padding: 20, backgroundColor: "white", flex: 1 }}>
         <SwipeListView
           style={{ flex: 1 }}
-          data={ingredients}
+          data={sortedIngredients}
           onRowOpen={() => {
             setIsSwiping(true);
           }}
