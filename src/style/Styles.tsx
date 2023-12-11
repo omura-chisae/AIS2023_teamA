@@ -21,41 +21,54 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   stockRipple: {
-    paddingVertical: 20,
-    padding: 8,
     borderBottomWidth: 1,
     borderBottomColor: "grey",
     overflow: "hidden",
     backgroundColor: "white",
-    flex: 1,
+    height: 100,
   },
   stockItemText: {
     fontSize: 18,
+    marginLeft: 20,
   },
   stockItemExpiryDate: {
     fontSize: 16,
+    marginLeft: 20,
   },
   stockSearchInput: {
     flex: 1,
   },
+  StockListItemContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flex: 1,
+  },
+  stockItemContainer: {
+    flexDirection: "column",
+    justifyContent: "center", // 垂直方向の中央揃え
+    flex: 1, // 利用可能なスペースを最大限に使用
+  },
   rowBack: {
     alignItems: "center",
     backgroundColor: "#DDD",
-    flex: 1,
     flexDirection: "row",
     justifyContent: "flex-end",
-    paddingLeft: 15,
+    height: 100,
   },
   deleteButton: {
     backgroundColor: "red",
     justifyContent: "center",
     alignItems: "center",
     width: 75,
-    height: "100%",
-    paddingVertical: 22,
+    height: 100,
     top: 0,
     bottom: 0,
     right: 0,
+    borderTopWidth: 1,
+    borderTopColor: "grey",
+    borderBottomWidth: 1,
+    borderBottomColor: "grey",
   },
   deleteButtonText: {
     color: "white",

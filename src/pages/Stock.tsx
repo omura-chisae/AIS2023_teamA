@@ -20,6 +20,7 @@ import {
   ViewStyle,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  LayoutChangeEvent,
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import {
@@ -32,6 +33,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -62,6 +64,13 @@ export const Stock = memo(() => {
   const [isSwiping, setIsSwiping] = useState(false);
   const ingredients = useUserIngredients();
   const [isExtended, setIsExtended] = React.useState(true);
+
+  const [rowHeights, setRowHeights] = useState<{ [key: string]: number }>({});
+
+  const handleLayout = (id: string, event: LayoutChangeEvent) => {
+    const layoutHeight = event.nativeEvent.layout.height;
+    setRowHeights((prevHeights) => ({ ...prevHeights, [id]: layoutHeight }));
+  };
 
   // カテゴリ編集画面用
   // const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
@@ -277,7 +286,7 @@ export const Stock = memo(() => {
             <Button onPress={hideItemDialog}>閉じる</Button>
           </Dialog.Actions>
         </Dialog>
-        <AnimatedFAB
+        {/* <AnimatedFAB
           icon={"plus"}
           label={"食材の追加"}
           extended={isExtended}
@@ -290,7 +299,7 @@ export const Stock = memo(() => {
           animateFrom={"left"}
           iconMode={"dynamic"}
           style={[fabStyle]}
-        />
+        /> */}
       </Portal>
       <View style={{ backgroundColor: "#F8F9F9", flex: 1, maxHeight: "100%" }}>
         <SwipeListView
@@ -316,20 +325,26 @@ export const Stock = memo(() => {
                   handleIngredientTap(data.item);
                 }
               }}
+              onLayout={(event) => handleLayout(data.item.id, event)}
               style={[styles.stockRipple, { backgroundColor: "#F8F9F9" }]}
             >
-              <View>
-                <Text style={styles.stockItemText}>
-                  {data.item.ingredientName}
-                </Text>
-                <Text style={styles.stockItemExpiryDate}>
-                  消費期限: {displayDateInJapanese(data.item.expiryDate)}
-                </Text>
+              <View style={styles.StockListItemContainer}>
+                <View style={styles.stockItemContainer}>
+                  <Text style={styles.stockItemText}>
+                    {data.item.ingredientName}
+                  </Text>
+                  <Text style={styles.stockItemExpiryDate}>
+                    消費期限: {displayDateInJapanese(data.item.expiryDate)}
+                  </Text>
+                </View>
+                <Icon name="chevron-right" size={24} color="gray" />
               </View>
             </TouchableRipple>
           )}
           renderHiddenItem={(data, rowMap) => (
-            <View style={styles.rowBack}>
+            <View
+              style={[styles.rowBack, { height: rowHeights[data.item.id] }]}
+            >
               <TouchableOpacity
                 style={styles.deleteButton}
                 onPress={() => handleDeleteIngredient(data.item.id)}
