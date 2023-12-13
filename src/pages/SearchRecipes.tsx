@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { memo } from "react";
 import { Alert, ScrollView, View } from "react-native";
 import { Button, Checkbox, RadioButton, Text } from "react-native-paper";
-import { ScrollView } from "react-native-gesture-handler";
 
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
 
