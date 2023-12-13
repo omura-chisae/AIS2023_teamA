@@ -200,6 +200,7 @@ export const Stock = memo(() => {
       primary: "#F7DC6F", // 検索バーに適用する新しい色
     },
   };
+
   return (
     <Provider>
       <Appbar.Header style={{ backgroundColor: "#DDAF56" }}>
@@ -280,6 +281,18 @@ export const Stock = memo(() => {
             </Text>
 
             <Text>数量: {selectedItem?.quantity}</Text>
+            <Text>
+              カテゴリー:{" "}
+              {selectedItem?.categories
+                .map((category) => {
+                  const matchedCategory = fetchedCategories.find(
+                    (cat) => cat.id === category.id
+                  );
+                  console.log("マッチしたカテゴリ:", matchedCategory);
+                  return matchedCategory?.title;
+                })
+                .join(", ")}
+            </Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={handleEditIngredient}>編集</Button>
