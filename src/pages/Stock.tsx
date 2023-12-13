@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useCallback } from "react";
+import React, { useState, useEffect, memo, useCallback, useMemo } from "react";
 import {
   Modal,
   Portal,
@@ -8,9 +8,20 @@ import {
   Dialog,
   TouchableRipple,
   Button,
+  AnimatedFAB,
 } from "react-native-paper";
-
-import { View, Text } from "react-native";
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  Animated,
+  StyleProp,
+  ViewStyle,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  LayoutChangeEvent,
+} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import {
   collection,
@@ -22,6 +33,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -32,6 +44,7 @@ import styles from "../style/Styles";
 import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
+import theme from "../style/themes";
 
 const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
 
@@ -50,9 +63,17 @@ export const Stock = memo(() => {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isSwiping, setIsSwiping] = useState(false);
   const ingredients = useUserIngredients();
+  const [isExtended, setIsExtended] = React.useState(true);
+
+  const [rowHeights, setRowHeights] = useState<{ [key: string]: number }>({});
+
+  const handleLayout = (id: string, event: LayoutChangeEvent) => {
+    const layoutHeight = event.nativeEvent.layout.height;
+    setRowHeights((prevHeights) => ({ ...prevHeights, [id]: layoutHeight }));
+  };
 
   // カテゴリ編集画面用
-  const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
+  // const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
   const hideCategoryModal = useCallback(() => setCategoryVisible(false), []);
   const [categoryVisible, setCategoryVisible] = useState(false);
 
@@ -80,6 +101,8 @@ export const Stock = memo(() => {
     const ingredientRef = doc(db, "ingredients", ingredientId);
     await deleteDoc(ingredientRef);
     // リストを更新
+
+    setIsSwiping(false);
   };
 
   useEffect(() => {
@@ -117,9 +140,69 @@ export const Stock = memo(() => {
     }
   };
 
+  // 選択されたカテゴリや検索クエリに基づいて食材をフィルタリングする関数
+  const filteredIngredients = useMemo(() => {
+    return ingredients.filter((ingredient) => {
+      // カテゴリでフィルタリング
+      if (
+        selectedCategory &&
+        !ingredient.categories.some(
+          (category) => category.id === selectedCategory
+        )
+      ) {
+        return false;
+      }
+      // 検索クエリでフィルタリング
+      if (
+        searchQuery &&
+        !ingredient.ingredientName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [ingredients, selectedCategory, searchQuery]);
+
+  // スクロールイベントハンドラ
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    // スクロールイベントの型を正しく指定
+    const currentScrollPosition = Math.floor(event.nativeEvent.contentOffset.y);
+    setIsExtended(currentScrollPosition <= 0);
+  };
+
+  // AnimatedFABのサイズを調整
+  const fabSize = 56;
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const showCategoryModal = useCallback(() => {
+    setCategoryVisible(true);
+    setModalVisible(true); // モーダル表示状態を更新
+  }, []);
+
+  // AnimatedFABのスタイルを設定
+  const fabStyle: StyleProp<ViewStyle> = {
+    position: "absolute",
+    // margin: 16,
+    right: 100,
+    bottom: 16, // 位置を下に調整
+    // height: 80, // 高さを大きくする
+    // borderRadius: 40, // borderRadiusを半分のサイズにして丸みを保持
+    backgroundColor: "#DDAF56", // FABの背景色
+    opacity: modalVisible ? 0.5 : 1, // モーダルが表示されている時は透明度を下げる
+  };
+
+  const searchBarTheme = {
+    ...theme, // 既存のテーマを展開
+    colors: {
+      ...theme.colors, // 既存の色を展開
+      primary: "#F7DC6F", // 検索バーに適用する新しい色
+    },
+  };
   return (
     <Provider>
-      <Appbar.Header>
+      <Appbar.Header style={{ backgroundColor: "#DDAF56" }}>
         {isSearchBarVisible ? (
           <Searchbar
             placeholder="Search"
@@ -128,6 +211,7 @@ export const Stock = memo(() => {
             autoFocus
             onBlur={closeSearchBar}
             style={styles.stockSearchInput}
+            theme={searchBarTheme}
           />
         ) : (
           <>
@@ -190,9 +274,9 @@ export const Stock = memo(() => {
           <Dialog.Content>
             <Text>
               消費期限:{" "}
-              {selectedItem?.expiryDate instanceof Date
-                ? selectedItem.expiryDate.toDateString()
-                : selectedItem?.expiryDate}
+              {selectedItem?.expiryDate
+                ? displayDateInJapanese(selectedItem.expiryDate)
+                : "日付なし"}
             </Text>
 
             <Text>数量: {selectedItem?.quantity}</Text>
@@ -202,11 +286,26 @@ export const Stock = memo(() => {
             <Button onPress={hideItemDialog}>閉じる</Button>
           </Dialog.Actions>
         </Dialog>
+        {/* <AnimatedFAB
+          icon={"plus"}
+          label={"食材の追加"}
+          extended={isExtended}
+          onPress={() => {
+            if (!modalVisible) {
+              showAddModal(); // モーダルが表示されていない時のみ機能する
+            }
+          }}
+          visible={!isAddModalVisible && !isEditModalVisible && !dialogVisible} // 常に表示する場合はtrue
+          animateFrom={"left"}
+          iconMode={"dynamic"}
+          style={[fabStyle]}
+        /> */}
       </Portal>
-      <View style={{ padding: 20, backgroundColor: "white", flex: 1 }}>
+      <View style={{ backgroundColor: "#F8F9F9", flex: 1, maxHeight: "100%" }}>
         <SwipeListView
-          style={{ flex: 1 }}
-          data={ingredients}
+          onScroll={onScroll}
+          style={{ flex: 1, backgroundColor: "#F8F9F9" }}
+          data={filteredIngredients}
           onRowOpen={() => {
             setIsSwiping(true);
           }}
@@ -217,7 +316,7 @@ export const Stock = memo(() => {
             setIsSwiping(true);
           }}
           swipeGestureEnded={() => {
-            setIsSwiping(true);
+            setIsSwiping(false); // ここをfalseに修正
           }}
           renderItem={(data, rowMap) => (
             <TouchableRipple
@@ -226,20 +325,26 @@ export const Stock = memo(() => {
                   handleIngredientTap(data.item);
                 }
               }}
-              style={styles.stockRipple}
+              onLayout={(event) => handleLayout(data.item.id, event)}
+              style={[styles.stockRipple, { backgroundColor: "#F8F9F9" }]}
             >
-              <View>
-                <Text style={styles.stockItemText}>
-                  {data.item.ingredientName}
-                </Text>
-                <Text style={styles.stockItemExpiryDate}>
-                  消費期限: {displayDateInJapanese(data.item.expiryDate)}
-                </Text>
+              <View style={styles.StockListItemContainer}>
+                <View style={styles.stockItemContainer}>
+                  <Text style={styles.stockItemText}>
+                    {data.item.ingredientName}
+                  </Text>
+                  <Text style={styles.stockItemExpiryDate}>
+                    消費期限: {displayDateInJapanese(data.item.expiryDate)}
+                  </Text>
+                </View>
+                <Icon name="chevron-right" size={24} color="gray" />
               </View>
             </TouchableRipple>
           )}
           renderHiddenItem={(data, rowMap) => (
-            <View style={styles.rowBack}>
+            <View
+              style={[styles.rowBack, { height: rowHeights[data.item.id] }]}
+            >
               <TouchableOpacity
                 style={styles.deleteButton}
                 onPress={() => handleDeleteIngredient(data.item.id)}

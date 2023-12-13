@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import {
-  query,
   collection,
+  query,
   where,
-  getDocs,
+  onSnapshot,
   Timestamp,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase";
@@ -13,24 +13,25 @@ export const useUserIngredients = () => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
   useEffect(() => {
-    const fetchIngredients = async () => {
-      const q = query(
-        collection(db, "ingredients"),
-        where("userId", "==", auth.currentUser?.uid)
-      );
-      const querySnapshot = await getDocs(q);
+    const q = query(
+      collection(db, "ingredients"),
+      where("userId", "==", auth.currentUser?.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const items: Ingredient[] = [];
       querySnapshot.forEach((doc) => {
         let data = doc.data() as Ingredient;
+        // FirestoreのTimestampオブジェクトをDateオブジェクトに変換
         if (data.expiryDate && data.expiryDate instanceof Timestamp) {
           data = { ...data, expiryDate: data.expiryDate.toDate() };
         }
         items.push({ ...data, id: doc.id });
       });
       setIngredients(items);
-    };
+    });
 
-    fetchIngredients();
+    return () => unsubscribe();
   }, []);
 
   return ingredients;
