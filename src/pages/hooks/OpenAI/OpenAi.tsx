@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, FlatList } from "react-native";
 import axios from "axios";
+import { useRecipeInfo } from "../../../RecipeInfoContext";
 
 interface Message {
   role: string;
@@ -60,13 +61,21 @@ const OpenAI = () => {
     }
   }, []);
 
-  // 他のコンポーネントからの命令文を受け取る
+  const { recipeInfo } = useRecipeInfo();
+
   useEffect(() => {
-    // 他のコンポーネントからの命令文
-    const commandFromOtherComponent = "Cook something with chicken and broccoli";
-    // 受け取った命令文を処理
-    handleSend(commandFromOtherComponent);
-  }, [handleSend]);
+    if (recipeInfo) {
+      handleSend(recipeInfo);
+    }
+  }, [recipeInfo, handleSend]);
+
+  // // 他のコンポーネントからの命令文を受け取る
+  // useEffect(() => {
+  //   // 他のコンポーネントからの命令文
+  //   const commandFromOtherComponent = "Cook something with chicken and broccoli";
+  //   // 受け取った命令文を処理
+  //   handleSend(commandFromOtherComponent);
+  // }, [handleSend]);
 
   return (
     <View style={{ flex: 1, padding: 16 }}>
@@ -75,7 +84,9 @@ const OpenAI = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={{ marginBottom: 8 }}>
-            <Text>{item.role === "user" ? "You:" : "Assistant:"} {item.content}</Text>
+            <Text>
+              {item.role === "user" ? "You:" : "Assistant:"} {item.content}
+            </Text>
           </View>
         )}
       />

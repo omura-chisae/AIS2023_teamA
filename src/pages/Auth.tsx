@@ -88,11 +88,9 @@ const Auth: React.FC = () => {
         autoCapitalize="none"
         style={styles.authInput}
       />
-      
-      <PrimaryButton onClick={Register} >新規登録</PrimaryButton>
-     <PrimaryButton onClick={Login}>
-        ログイン
-        </PrimaryButton>
+
+      <PrimaryButton onPress={Register}>新規登録</PrimaryButton>
+      <PrimaryButton onPress={Login}>ログイン</PrimaryButton>
     </View>
   );
 };

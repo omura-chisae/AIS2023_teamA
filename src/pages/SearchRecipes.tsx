@@ -7,6 +7,7 @@ import { useUserIngredients } from "./CustomHook/useUserIngredients";
 import { useRecipeInfo } from "../RecipeInfoContext";
 
 import { PrimaryButton } from "../pages/components/PrimaryButton";
+import { useNavigation } from "@react-navigation/native";
 
 export const SearchRecipes = memo(() => {
   const userIngredients = useUserIngredients();
@@ -108,12 +109,14 @@ export const SearchRecipes = memo(() => {
     }
   };
 
+  const navigation = useNavigation();
+  const { setRecipeInfo } = useRecipeInfo();
+
   const showIngredients = () => {
     const selectedKinds = kinds.find((item) => item.select)?.title;
     const selectedGenre = genre.find((item) => item.select)?.title;
     const selectedIngredients = ingredients.filter((item) => item.select);
     const selectedTimes = times.filter((item) => item.select);
-    const { setRecipeInfo } = useRecipeInfo();
 
     const displayIngredients = selectedIngredients.map((ingredient) => {
       const found = userIngredients.find(
@@ -134,6 +137,7 @@ export const SearchRecipes = memo(() => {
     )}, 時間: ${timeText}`;
 
     setRecipeInfo(message);
+    navigation.navigate("Recipe");
   };
 
   return (
@@ -249,9 +253,7 @@ export const SearchRecipes = memo(() => {
           ))}
         </View>
 
-
-        <PrimaryButton onClick={showIngredients}>提案</PrimaryButton>
-    
+        <PrimaryButton onPress={showIngredients}>提案</PrimaryButton>
       </ScrollView>
     </View>
   );
