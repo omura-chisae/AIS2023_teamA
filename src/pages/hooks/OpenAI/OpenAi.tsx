@@ -12,7 +12,7 @@ interface Message {
 const OpenAI = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const APIKey = "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";
+  const APIKey = "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";
   const model = "gpt-3.5-turbo-0301";
 
   const sendMessageToChatGPT = async (message: any) => {
@@ -63,19 +63,19 @@ const OpenAI = () => {
 
   const { recipeInfo } = useRecipeInfo();
 
-  useEffect(() => {
-    if (recipeInfo) {
-      handleSend(recipeInfo);
-    }
-  }, [recipeInfo, handleSend]);
-
-  // // 他のコンポーネントからの命令文を受け取る
   // useEffect(() => {
-  //   // 他のコンポーネントからの命令文
-  //   const commandFromOtherComponent = "Cook something with chicken and broccoli";
-  //   // 受け取った命令文を処理
-  //   handleSend(commandFromOtherComponent);
-  // }, [handleSend]);
+  //   if (recipeInfo) {
+  //     handleSend(recipeInfo);
+  //   }
+  // }, [recipeInfo, handleSend]);
+
+  //他のコンポーネントからの命令文を受け取る
+  useEffect(() => {
+  // 他のコンポーネントからの命令文
+  const commandFromOtherComponent = `${recipeInfo}の条件でレシピを考えてください`;
+  // 受け取った命令文を処理
+  handleSend(commandFromOtherComponent);
+  }, [handleSend]);
 
   return (
     <View style={{ flex: 1, padding: 16 }}>
