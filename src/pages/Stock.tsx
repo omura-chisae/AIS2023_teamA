@@ -44,7 +44,7 @@ import styles from "../style/Styles";
 import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
-import themes from "../style/themes";
+// import themes from "../style/themes";
 
 const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
 
