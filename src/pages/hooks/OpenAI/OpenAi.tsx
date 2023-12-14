@@ -12,7 +12,7 @@ interface Message {
 const OpenAI = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const APIKey = "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";
+  const APIKey = "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";
   const model = "gpt-3.5-turbo-0301";
 
   const sendMessageToChatGPT = async (message: any) => {
