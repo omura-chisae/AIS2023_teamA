@@ -7,6 +7,7 @@ import { PaperProvider } from "react-native-paper";
 
 import AuthContext from "./src/AuthContext";
 import { themes } from "./src/style/themes";
+import { RecipeInfoProvider } from "./src/RecipeInfoProvider";
 
 type UserType = User | null;
 
@@ -27,9 +28,11 @@ function App() {
 
   return (
     <PaperProvider theme={themes}>
-      <NavigationContainer>
-        <AuthContext user={user} />
-      </NavigationContainer>
+      <RecipeInfoProvider>
+        <NavigationContainer>
+          <AuthContext user={user} />
+        </NavigationContainer>
+      </RecipeInfoProvider>
     </PaperProvider>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Button } from "react-native";
 import { db } from "../firebase";
 import { doc, updateDoc } from "firebase/firestore";
@@ -26,14 +26,14 @@ type EditStockProps = {
 export const EditStock: React.FC<EditStockProps> = ({
   ingredient,
   hideModal,
+  addIngredientCategory,
   onEditComplete,
 }) => {
   const [ingredientName, setIngredientName] = useState(
     ingredient.ingredientName
   );
-  const [categoryLists, setCategoryLists] = useState<itemProps[]>(
-    ingredient.categories
-  );
+  const [categoryLists, setCategoryLists] = useState<itemProps[]>([]);
+
   const [date, setDate] = useState<Date>(ingredient.expiryDate);
   const [quantity, setQuantity] = useState(ingredient.quantity);
 
@@ -44,7 +44,9 @@ export const EditStock: React.FC<EditStockProps> = ({
       const ingredientRef = doc(db, "ingredients", ingredient.id);
       await updateDoc(ingredientRef, {
         ingredientName,
-        categories: categoryLists,
+        categories: categoryLists
+          .filter((item) => item.checked)
+          .map((item) => item.id),
         expiryDate: date,
         quantity,
       });
@@ -58,16 +60,31 @@ export const EditStock: React.FC<EditStockProps> = ({
     }
   };
 
+  useEffect(() => {
+    // 親コンポーネントから渡されたカテゴリリストを使用して、
+    // 既存のカテゴリ選択状態を更新する
+    const updatedCategoryLists = addIngredientCategory.map((cat) => ({
+      id: cat.id,
+      title: cat.title,
+      checked: ingredient.categories.some((ingCat) => ingCat.id === cat.id),
+    }));
+    console.log("初期化されたカテゴリリスト:", updatedCategoryLists); // デバッグ用
+    setCategoryLists(updatedCategoryLists);
+  }, [addIngredientCategory, ingredient.categories]);
+
+  const handleCheckboxToggle = (itemId: string) => {
+    const updatedItems = categoryLists.map((item) =>
+      item.id === itemId ? { ...item, checked: !item.checked } : item
+    );
+    console.log("更新されたカテゴリリスト:", updatedItems); // デバッグ用
+    setCategoryLists(updatedItems);
+  };
+
   return (
     <View>
       <AddStock
         changeIngredientName={setIngredientName}
-        handleCheckboxToggle={(itemId) => {
-          const updatedItems = categoryLists.map((item) =>
-            item.id === itemId ? { ...item, checked: !item.checked } : item
-          );
-          setCategoryLists(updatedItems);
-        }}
+        handleCheckboxToggle={handleCheckboxToggle}
         categoryLists={categoryLists}
       />
       <ShowDate changeDate={setDate} date={date} />

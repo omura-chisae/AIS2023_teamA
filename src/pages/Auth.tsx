@@ -76,6 +76,7 @@ const Auth: React.FC = () => {
         label="Email"
         value={email}
         onChangeText={setEmail}
+        autoCapitalize="none"
         style={styles.authInput}
       />
       <TextInput
@@ -83,6 +84,7 @@ const Auth: React.FC = () => {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        autoCapitalize="none"
         style={styles.authInput}
       />
       <Button mode="contained" onPress={Register} style={styles.authButton}>
