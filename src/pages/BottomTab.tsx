@@ -14,7 +14,7 @@ import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Theme } from "./style/theme";
+import { themes } from "../style/themes";
 
 interface AnimatedIconProps {
   name: string;
@@ -140,7 +140,7 @@ export const BottomTab = memo(() => {
             // 他のスタイル設定...
           },
 
-          tabBarActiveTintColor: Theme.colors.primary,
+          tabBarActiveTintColor: themes.colors.primary,
           tabBarInactiveTintColor: "gray",
           // 他の設定...
         })}

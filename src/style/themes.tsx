@@ -1,4 +1,4 @@
-const theme = {
+export const themes = {
   colors: {
     primary: "#DDAF56",
     onPrimary: "rgb(255, 255, 255)",
@@ -42,5 +42,3 @@ const theme = {
     backdrop: "rgba(55, 47, 36, 0.4)",
   },
 };
-
-export default theme;

@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useCallback } from "react";
+import React, { useState, useEffect, memo, useCallback } from "react";
 import { View } from "react-native";
 import { Button } from "react-native-paper";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
@@ -81,12 +81,14 @@ export const AddUpdateStock: React.FC<addUpdateStockProps> = memo((props) => {
   // CountButton
   const [quantity, setQuantity] = useState(0);
   const countUp = useCallback(
-    () => setQuantity((prevQuantity) => prevQuantity + 1),
+    () => setQuantity((prevQuantity: number) => prevQuantity + 1),
     []
   );
   const countDown = useCallback(
     () =>
-      setQuantity((prevQuantity) => (prevQuantity >= 1 ? prevQuantity - 1 : 0)),
+      setQuantity((prevQuantity: number) =>
+        prevQuantity >= 1 ? prevQuantity - 1 : 0
+      ),
     []
   );
 

@@ -8,7 +8,7 @@ import {
   Dialog,
   TouchableRipple,
   Button,
-  AnimatedFAB,
+  Switch,
 } from "react-native-paper";
 import {
   View,
@@ -44,7 +44,7 @@ import styles from "../style/Styles";
 import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
-import theme from "../style/themes";
+import themes from "../style/themes";
 
 const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
 
@@ -73,9 +73,15 @@ export const Stock = memo(() => {
   };
 
   // カテゴリ編集画面用
-  // const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
+  const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
   const hideCategoryModal = useCallback(() => setCategoryVisible(false), []);
   const [categoryVisible, setCategoryVisible] = useState(false);
+
+  // RNPickerSelectでフィルターした食材リストを保存する変数
+  const [filteredIngredients, setFilteredIngredients] = useState(ingredients);
+  // ソートした食材リストを保存する変数
+  const [sortedIngredients, setSortedIngredients] = useState(ingredients);
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   // カテゴリを取得
   const fetchedCategories = useCategories();
@@ -140,66 +146,42 @@ export const Stock = memo(() => {
     }
   };
 
-  // 選択されたカテゴリや検索クエリに基づいて食材をフィルタリングする関数
-  const filteredIngredients = useMemo(() => {
-    return ingredients.filter((ingredient) => {
-      // カテゴリでフィルタリング
-      if (
-        selectedCategory &&
-        !ingredient.categories.some(
+  useEffect(() => {
+    // 選択したカテゴリを含む食材を抽出
+    if (selectedCategory) {
+      const updatedIngredients = ingredients.filter((ingredient) => {
+        return ingredient.categories.some(
           (category) => category.id === selectedCategory
-        )
-      ) {
-        return false;
-      }
-      // 検索クエリでフィルタリング
-      if (
-        searchQuery &&
-        !ingredient.ingredientName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())
-      ) {
-        return false;
-      }
-      return true;
-    });
-  }, [ingredients, selectedCategory, searchQuery]);
+        );
+      });
+      setFilteredIngredients(updatedIngredients);
+      setSortedIngredients(updatedIngredients);
+    } else {
+      setFilteredIngredients(ingredients);
+      setSortedIngredients(ingredients); // sortedIngredientsを参照してリスト表示するため代入しておく
+    }
+  }, [selectedCategory]);
 
-  // スクロールイベントハンドラ
-  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    // スクロールイベントの型を正しく指定
-    const currentScrollPosition = Math.floor(event.nativeEvent.contentOffset.y);
-    setIsExtended(currentScrollPosition <= 0);
-  };
+  const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
 
-  // AnimatedFABのサイズを調整
-  const fabSize = 56;
-  const [modalVisible, setModalVisible] = useState(false);
+  useEffect(() => {
+    // スイッチがオンの時に消費期限順に並び変える
+    if (isSwitchOn) {
+      const updatedIngredients = Array.from(filteredIngredients);
+      updatedIngredients.sort((a, b) => {
+        const expiryDateA =
+          a.expiryDate instanceof Date ? a.expiryDate.getTime() : 0;
+        const expiryDateB =
+          b.expiryDate instanceof Date ? b.expiryDate.getTime() : 0;
+        return expiryDateA - expiryDateB;
+      });
+      setSortedIngredients(updatedIngredients);
+    } else {
+      // スイッチがオフの時は元の順番（filteredIngredients）を代入
+      setSortedIngredients(filteredIngredients);
+    }
+  }, [isSwitchOn]);
 
-  const showCategoryModal = useCallback(() => {
-    setCategoryVisible(true);
-    setModalVisible(true); // モーダル表示状態を更新
-  }, []);
-
-  // AnimatedFABのスタイルを設定
-  const fabStyle: StyleProp<ViewStyle> = {
-    position: "absolute",
-    // margin: 16,
-    right: 100,
-    bottom: 16, // 位置を下に調整
-    // height: 80, // 高さを大きくする
-    // borderRadius: 40, // borderRadiusを半分のサイズにして丸みを保持
-    backgroundColor: "#DDAF56", // FABの背景色
-    opacity: modalVisible ? 0.5 : 1, // モーダルが表示されている時は透明度を下げる
-  };
-
-  const searchBarTheme = {
-    ...theme, // 既存のテーマを展開
-    colors: {
-      ...theme.colors, // 既存の色を展開
-      primary: "#F7DC6F", // 検索バーに適用する新しい色
-    },
-  };
   return (
     <Provider>
       <Appbar.Header style={{ backgroundColor: "#DDAF56" }}>
@@ -211,7 +193,7 @@ export const Stock = memo(() => {
             autoFocus
             onBlur={closeSearchBar}
             style={styles.stockSearchInput}
-            theme={searchBarTheme}
+            // theme={searchBarTheme}
           />
         ) : (
           <>
@@ -227,6 +209,8 @@ export const Stock = memo(() => {
               />
             </View>
             <Appbar.Action icon="pencil" onPress={showCategoryModal} />
+            <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
+            <Text>消費期限順に並び変え</Text>
           </>
         )}
       </Appbar.Header>
@@ -303,9 +287,9 @@ export const Stock = memo(() => {
       </Portal>
       <View style={{ backgroundColor: "#F8F9F9", flex: 1, maxHeight: "100%" }}>
         <SwipeListView
-          onScroll={onScroll}
+          // onScroll={onScroll}
           style={{ flex: 1, backgroundColor: "#F8F9F9" }}
-          data={filteredIngredients}
+          data={sortedIngredients}
           onRowOpen={() => {
             setIsSwiping(true);
           }}
