@@ -4,6 +4,7 @@ import { Alert, ScrollView, View } from "react-native";
 import { Button, Checkbox, RadioButton, Text } from "react-native-paper";
 
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
+import { useRecipeInfo } from "../RecipeInfoContext";
 
 import { PrimaryButton } from "../pages/components/PrimaryButton";
 
@@ -112,6 +113,7 @@ export const SearchRecipes = memo(() => {
     const selectedGenre = genre.find((item) => item.select)?.title;
     const selectedIngredients = ingredients.filter((item) => item.select);
     const selectedTimes = times.filter((item) => item.select);
+    const { setRecipeInfo } = useRecipeInfo();
 
     const displayIngredients = selectedIngredients.map((ingredient) => {
       const found = userIngredients.find(
@@ -130,7 +132,8 @@ export const SearchRecipes = memo(() => {
     const message = `種類: ${selectedKinds}, ジャンル: ${selectedGenre}, 食材: ${displayIngredients.join(
       ", "
     )}, 時間: ${timeText}`;
-    alert(message);
+
+    setRecipeInfo(message);
   };
 
   return (
@@ -146,8 +149,8 @@ export const SearchRecipes = memo(() => {
             flexWrap: "wrap",
             borderBottomWidth: 1,
             borderBottomColor: "#DDAF56",
-            marginLeft: "10px",
-            marginRight: "10px",
+            marginLeft: 10,
+            marginRight: 10,
           }}
         >
           {kinds.map((item, index) => (
@@ -176,8 +179,8 @@ export const SearchRecipes = memo(() => {
             flexWrap: "wrap",
             borderBottomWidth: 1,
             borderBottomColor: "#DDAF56",
-            marginLeft: "10px",
-            marginRight: "10px",
+            marginLeft: 10,
+            marginRight: 10,
           }}
         >
           {genre.map((item, index) => (
@@ -207,8 +210,8 @@ export const SearchRecipes = memo(() => {
             alignItems: "center",
             borderBottomWidth: 1,
             borderBottomColor: "#DDAF56",
-            marginLeft: "10px",
-            marginRight: "10px",
+            marginLeft: 10,
+            marginRight: 10,
           }}
         >
           {ingredients.map((item, index) => (
@@ -246,11 +249,9 @@ export const SearchRecipes = memo(() => {
           ))}
         </View>
 
-        <PrimaryButton>提案</PrimaryButton>
-        <br />
-        <PrimaryButton>
-          提案するための情報
-          </PrimaryButton>
+
+        <PrimaryButton onClick={showIngredients}>提案</PrimaryButton>
+    
       </ScrollView>
     </View>
   );
