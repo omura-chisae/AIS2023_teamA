@@ -1,6 +1,13 @@
 import React, { useState, memo, useCallback, useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { List, Appbar, Dialog, Button, TextInput } from "react-native-paper";
+import {
+  List,
+  Appbar,
+  Dialog,
+  Button,
+  TextInput,
+  Portal,
+} from "react-native-paper";
 
 import {
   collection,
@@ -112,23 +119,25 @@ export const CategoryMenu = memo(() => {
       </View>
 
       {/* 削除ダイアログ */}
-      <Dialog visible={visible} onDismiss={hideDialog}>
-        <Dialog.Content>
-          <Text>{`カテゴリ「${selectedCategory?.title}」を削除しますか？ `}</Text>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button onPress={hideDialog}>キャンセル</Button>
-          <Button
-            onPress={() => {
-              if (selectedCategory) {
-                deleteCategory(selectedCategory.id);
-              }
-            }}
-          >
-            削除する
-          </Button>
-        </Dialog.Actions>
-      </Dialog>
+      <Portal>
+        <Dialog visible={visible} onDismiss={hideDialog}>
+          <Dialog.Content>
+            <Text>{`カテゴリ「${selectedCategory?.title}」を削除しますか？ `}</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>キャンセル</Button>
+            <Button
+              onPress={() => {
+                if (selectedCategory) {
+                  deleteCategory(selectedCategory.id);
+                }
+              }}
+            >
+              削除する
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
 
       {/* カテゴリ名変更ダイアログ
       <Dialog visible={renameVisible} onDismiss={hideRenameDialog}>
@@ -143,16 +152,21 @@ export const CategoryMenu = memo(() => {
       </Dialog> */}
 
       {/* カテゴリ追加ダイアログ */}
-      <Dialog visible={addVisible} onDismiss={hideAddDialog}>
-        <Dialog.Title>カテゴリを追加する</Dialog.Title>
-        <Dialog.Content>
-          <TextInput value={categoryName} onChangeText={changeText}></TextInput>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button onPress={hideAddDialog}>キャンセル</Button>
-          <Button onPress={addCategory}>追加する</Button>
-        </Dialog.Actions>
-      </Dialog>
+      <Portal>
+        <Dialog visible={addVisible} onDismiss={hideAddDialog}>
+          <Dialog.Title>カテゴリを追加する</Dialog.Title>
+          <Dialog.Content>
+            <TextInput
+              value={categoryName}
+              onChangeText={changeText}
+            ></TextInput>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideAddDialog}>キャンセル</Button>
+            <Button onPress={addCategory}>追加する</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </>
   );
 });
