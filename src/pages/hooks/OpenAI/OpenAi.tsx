@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, FlatList } from "react-native";
 import axios from "axios";
 import { useRecipeInfo } from "../../../RecipeInfoContext";
+import Config from "react-native-config";
 
 interface Message {
   role: string;
@@ -11,9 +12,10 @@ interface Message {
 
 const OpenAI = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-
-  const APIKey = "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";
+  
+  const APIKey = Config.API_KEY;
   const model = "gpt-3.5-turbo-0301";
+  console.log(APIKey);
 
   const sendMessageToChatGPT = async (message: any) => {
     try {
@@ -78,19 +80,44 @@ const OpenAI = () => {
   }, [handleSend]);
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
-      <FlatList
-        data={messages}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 8 }}>
-            <Text>
-              {item.role === "user" ? "You:" : "Assistant:"} {item.content}
-            </Text>
-          </View>
-        )}
-      />
-    </View>
+    // <View style={{ flex: 1, padding: 16 }}>
+    //   <FlatList
+    //     data={messages}
+    //     keyExtractor={(item) => item.id.toString()}
+    //     renderItem={({ item }) => (
+    //       <View style={{ marginBottom: 8 }}>
+    //         <Text>
+    //           {item.role === "user" ? "You:" : "Assistant:"} {item.content}
+    //         </Text>
+    //       </View>
+    //     )}
+    //   />
+    // </View>
+      <View style={{ flex: 1, padding: 16 }}>
+        <FlatList
+          data={messages}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View
+              style={{
+                marginBottom: 8,
+                alignSelf: item.role === "user" ? "flex-end" : "flex-start",
+              }}
+            >
+              <View
+                style={{
+                  padding: 10,
+                  borderRadius: 20,
+                  backgroundColor: item.role === "user" ? "#D3D3D3" : "#87CEEB",
+                  maxWidth: "80%",
+                }}
+              >
+                <Text>{item.content}</Text>
+              </View>
+            </View>
+          )}
+        />
+      </View>
   );
 };
 
