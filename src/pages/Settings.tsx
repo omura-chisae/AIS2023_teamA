@@ -1,6 +1,7 @@
-import { memo } from "react";
+import React, { memo } from "react";
 import { View } from "react-native";
 import { Button, Text } from "react-native-paper";
+import { PrimaryButton } from "./components/PrimaryButton";
 
 export const Settings = memo(() => {
   return (
@@ -13,11 +14,11 @@ export const Settings = memo(() => {
       }}
     >
       <View>
-        <Text>ヘッダー</Text>
+        
       </View>
-      <Button mode="contained">ログアウト</Button>
-      <Button mode="contained">消費期限通知　ON</Button>
-      <Button mode="contained">消費期限通知　OFF</Button>
+      <PrimaryButton>ログアウト</PrimaryButton>
+      <PrimaryButton>消費期限通知　ON</PrimaryButton>
+      <PrimaryButton>消費期限通知　OFF</PrimaryButton>
     </View>
   );
 });

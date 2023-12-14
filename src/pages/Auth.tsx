@@ -10,6 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 import styles from "../style/Styles";
+import { PrimaryButton } from "./components/PrimaryButton";
 
 type RootStackParamList = {
   UserPage: { userId: string };
@@ -85,12 +86,11 @@ const Auth: React.FC = () => {
         secureTextEntry
         style={styles.authInput}
       />
-      <Button mode="contained" onPress={Register} style={styles.authButton}>
-        新規登録
-      </Button>
-      <Button mode="contained" onPress={Login} style={styles.authButton}>
+      
+      <PrimaryButton onClick={Register} >新規登録</PrimaryButton>
+     <PrimaryButton onClick={Login}>
         ログイン
-      </Button>
+        </PrimaryButton>
     </View>
   );
 };

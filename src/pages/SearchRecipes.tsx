@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { memo } from "react";
 import { Alert, ScrollView, View } from "react-native";
 import { Button, Checkbox, RadioButton, Text } from "react-native-paper";
 
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
+
+import { PrimaryButton } from "../pages/components/PrimaryButton";
 
 export const SearchRecipes = memo(() => {
   const userIngredients = useUserIngredients();
@@ -244,13 +246,11 @@ export const SearchRecipes = memo(() => {
           ))}
         </View>
 
-        <Button mode="contained" style={{ backgroundColor: "#DDAF56" }}>
-          提案
-        </Button>
+        <PrimaryButton>提案</PrimaryButton>
         <br />
-        <Button mode="contained" onPress={showIngredients}>
+        <PrimaryButton>
           提案するための情報
-        </Button>
+          </PrimaryButton>
       </ScrollView>
     </View>
   );
