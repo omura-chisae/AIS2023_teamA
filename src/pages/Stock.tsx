@@ -201,6 +201,10 @@ export const Stock = memo(() => {
     },
   };
 
+  useEffect(() => {
+    console.log("選択された食材のカテゴリIDリスト:", selectedItem?.categories);
+  }, [selectedItem]);
+
   return (
     <Provider>
       <Appbar.Header style={{ backgroundColor: "#DDAF56" }}>
@@ -279,17 +283,22 @@ export const Stock = memo(() => {
                 ? displayDateInJapanese(selectedItem.expiryDate)
                 : "日付なし"}
             </Text>
-
             <Text>数量: {selectedItem?.quantity}</Text>
             <Text>
               カテゴリー:{" "}
               {selectedItem?.categories
-                .map((category) => {
-                  const matchedCategory = fetchedCategories.find(
-                    (cat) => cat.id === category.id
+                .map((categoryItem) => {
+                  console.log("カテゴリID:", categoryItem.id);
+                  const category = fetchedCategories.find(
+                    (cat) => cat.id === categoryItem.id
                   );
-                  console.log("マッチしたカテゴリ:", matchedCategory);
-                  return matchedCategory?.title;
+                  if (!category) {
+                    console.error(
+                      `カテゴリID ${categoryItem.id} に一致するタイトルが見つかりません。`
+                    );
+                    return "不明なカテゴリ";
+                  }
+                  return category.title;
                 })
                 .join(", ")}
             </Text>
