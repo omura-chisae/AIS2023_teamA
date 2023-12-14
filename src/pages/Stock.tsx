@@ -238,8 +238,8 @@ export const Stock = memo(() => {
           onDismiss={hideCategoryModal}
           contentContainerStyle={styles.stockContainer}
         >
-          <Button onPress={hideCategoryModal}>閉じる</Button>
           <CategoryMenu />
+          <Button onPress={hideCategoryModal}>閉じる</Button>
         </Modal>
 
         {/* 編集用モーダル */}

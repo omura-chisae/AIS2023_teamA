@@ -19,6 +19,8 @@ const styles = StyleSheet.create({
   stockContainer: {
     padding: 20,
     backgroundColor: "white",
+    borderRadius: 20,
+    marginHorizontal: 20, // モーダルの左右の余白を調整
   },
   stockRipple: {
     paddingVertical: 20,
@@ -76,6 +78,19 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginRight: 10,
     marginLeft: 10,
+  },
+
+  // AddUpdateStock コンポーネントで使用されるスタイル
+  AddUpdateStockcontainer: {
+    padding: 20, //モーダル内の四方に余白を空ける
+  },
+
+  // showDate コンポーネントで使用されるスタイル
+  showDateCalendarStyle: {
+    backgroundColor: "#DDAF56",
+    borderRadius: 20,
+    marginTop: 20,
+    marginBottom: 20,
   },
 });
 
