@@ -6,7 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { PaperProvider } from "react-native-paper";
 
 import AuthContext from "./src/AuthContext";
-import { Theme } from "./src/pages/style/theme";
+import { themes } from "./src/style/themes";
 import { RecipeInfoProvider } from "./src/RecipeInfoProvider";
 
 type UserType = User | null;
@@ -27,7 +27,7 @@ function App() {
   }, []);
 
   return (
-    <PaperProvider theme={Theme}>
+    <PaperProvider theme={themes}>
       <RecipeInfoProvider>
         <NavigationContainer>
           <AuthContext user={user} />

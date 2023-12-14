@@ -1,19 +1,25 @@
-import React, { useState, useCallback } from "react";
-import { GiftedChat, IMessage } from "react-native-gifted-chat";
-import { StyleSheet, View } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, FlatList } from "react-native";
 import axios from "axios";
 
-const OpenAI = () => {
-  const [messages, setMessages] = useState<IMessage[]>([]);
+interface Message {
+  role: string;
+  content: any;
+  id: number;
+}
 
-  const APIkye = "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";
+const OpenAI = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  const APIKey = "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";
+  const model = "gpt-3.5-turbo-0301";
 
   const sendMessageToChatGPT = async (message: any) => {
     try {
       const response = await axios.post(
         "https://api.openai.com/v1/chat/completions",
         {
-          model: "gpt-3.5-turbo-0301", // 使用するモデル
+          model,
           messages: [
             { role: "system", content: "You" },
             { role: "user", content: message },
@@ -21,13 +27,12 @@ const OpenAI = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${APIkye}`,
+            Authorization: `Bearer ${APIKey}`,
             "Content-Type": "application/json",
           },
         }
       );
 
-      // ChatGPTからの応答を取得
       const reply = response.data.choices[0].message.content;
       return reply;
     } catch (error) {
@@ -36,41 +41,46 @@ const OpenAI = () => {
     }
   };
 
-  const handleSend = useCallback(async (newMessages: IMessage[] = []) => {
-    const userMessage = newMessages[0];
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages)
-    );
+  const handleSend = useCallback(async (userMessage: any) => {
+    // ユーザのメッセージを追加
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { role: "user", content: userMessage, id: prevMessages.length },
+    ]);
 
     // ChatGPTにメッセージを送信して応答を受け取る
-    const reply = await sendMessageToChatGPT(userMessage.text);
+    const reply = await sendMessageToChatGPT(userMessage);
 
     if (reply) {
-      const botMessage = {
-        _id: Math.random().toString(),
-        text: reply,
-        createdAt: new Date(),
-        user: { _id: 2, name: "ChatGPT" },
-        avatar: "https://placeimg.com/140/140/any",
-      };
-
-      setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, [botMessage])
-      );
+      // ChatGPTの応答を追加
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { role: "assistant", content: reply, id: prevMessages.length + 1 },
+      ]);
     }
   }, []);
 
+  // 他のコンポーネントからの命令文を受け取る
+  useEffect(() => {
+    // 他のコンポーネントからの命令文
+    const commandFromOtherComponent = "Cook something with chicken and broccoli";
+    // 受け取った命令文を処理
+    handleSend(commandFromOtherComponent);
+  }, [handleSend]);
+
   return (
-    <View style={styles.container}>
-      <GiftedChat messages={messages} onSend={handleSend} user={{ _id: 1 }} />
+    <View style={{ flex: 1, padding: 16 }}>
+      <FlatList
+        data={messages}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={{ marginBottom: 8 }}>
+            <Text>{item.role === "user" ? "You:" : "Assistant:"} {item.content}</Text>
+          </View>
+        )}
+      />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default OpenAI;
