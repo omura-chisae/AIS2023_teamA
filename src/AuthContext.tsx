@@ -34,12 +34,26 @@ const AuthContext: React.FC<AuthContextProps> = ({ user }) => {
   }, [user]);
 
   return (
-      <Stack.Navigator initialRouteName={isAdmin ? "Admin" : user ? "UserPage" : "Auth"}>
-        <Stack.Screen name="Auth" component={Auth} options={{ headerShown: false }} />
-        <Stack.Screen name="UserPage" component={UserPage} options={{ headerLeft: () => null,headerShown: false }} />
-        <Stack.Screen name="Admin" component={AdminPage} options={{ headerShown: false }} />
-        <Stack.Screen name="Recipe" component={Recipe} />
-      </Stack.Navigator>
+    <Stack.Navigator
+      initialRouteName={isAdmin ? "Admin" : user ? "UserPage" : "Auth"}
+    >
+      <Stack.Screen
+        name="Auth"
+        component={Auth}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="UserPage"
+        component={UserPage}
+        options={{ headerLeft: () => null, headerShown: false }}
+      />
+      <Stack.Screen
+        name="Admin"
+        component={AdminPage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen name="Recipe" component={Recipe} />
+    </Stack.Navigator>
   );
 };
 

@@ -4,7 +4,14 @@ import { Button, Text } from "react-native-paper";
 
 export const Settings = memo(() => {
   return (
-    <View style={{ flex: 1, padding: 16, justifyContent: 'space-between' }}>
+    <View
+      style={{
+        flex: 1,
+        padding: 16,
+        justifyContent: "space-between",
+        backgroundColor: "#F8F9F9",
+      }}
+    >
       <View>
         <Text>ヘッダー</Text>
       </View>

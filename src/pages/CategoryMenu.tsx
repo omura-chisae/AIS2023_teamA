@@ -17,6 +17,9 @@ import {
   where,
   deleteDoc,
   doc,
+  getDoc,
+  getDocs,
+  writeBatch,
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
 
@@ -66,15 +69,46 @@ export const CategoryMenu = memo(() => {
   );
 
   // カテゴリの削除処理
-  const deleteCategory = (id: string): void => {
-    if (selectedCategory) {
-      if (auth.currentUser === null) {
-        return;
-      }
-      const ref = doc(db, "categories", id);
-      deleteDoc(ref);
+  // const deleteCategory = (id: string): void => {
+  //   if (selectedCategory) {
+  //     if (auth.currentUser === null) {
+  //       return;
+  //     }
+  //     const ref = doc(db, "categories", id);
+  //     deleteDoc(ref);
+  //   }
+  //   setVisible(false);
+  // };
+
+  // カテゴリの削除処理
+  const deleteCategory = async (categoryId: string): Promise<void> => {
+    if (!auth.currentUser) {
+      return;
     }
-    setVisible(false);
+
+    // カテゴリに関連する食材を検索
+    const ingredientQuery = query(
+      collection(db, "ingredients"),
+      where("categories", "array-contains", categoryId)
+    );
+
+    const querySnapshot = await getDocs(ingredientQuery);
+    const batch = writeBatch(db);
+
+    querySnapshot.forEach((doc) => {
+      // カテゴリー情報を更新
+      const updatedCategories = doc
+        .data()
+        .categories.filter((catId: string) => catId !== categoryId);
+      batch.update(doc.ref, { categories: updatedCategories });
+    });
+
+    // カテゴリを削除
+    const categoryRef = doc(db, "categories", categoryId);
+    batch.delete(categoryRef);
+
+    // Firestoreに更新を反映
+    await batch.commit();
   };
 
   // カテゴリの追加処理

@@ -40,7 +40,7 @@ const addIngredient = (
 
 type addUpdateStockProps = {
   hideModal: () => void;
-  onAdd: () => void;
+  onAdd?: () => void;
   addIngredientCategory: itemProps[];
 };
 
@@ -50,7 +50,9 @@ export const AddUpdateStock: React.FC<addUpdateStockProps> = memo((props) => {
   const handleAddClick = async () => {
     await addIngredient(ingredientName, categoryLists, date, quantity);
     hideModal();
-    onAdd(); // 新しい食材が追加された後にリストを更新
+    if (onAdd) {
+      onAdd(); //新しい食材が追加された後にリストを更新
+    }
   };
 
   // AddStock

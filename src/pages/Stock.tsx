@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useCallback } from "react";
+import React, { useState, useEffect, memo, useCallback, useMemo } from "react";
 import {
   Modal,
   Portal,
@@ -10,8 +10,18 @@ import {
   Button,
   Switch,
 } from "react-native-paper";
-
-import { View, Text } from "react-native";
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  Animated,
+  StyleProp,
+  ViewStyle,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  LayoutChangeEvent,
+} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import {
   collection,
@@ -23,16 +33,18 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
-
 import { AddUpdateStock } from "./AddUpdateStock";
 import { EditStock, Ingredient } from "./EditStock";
 import styles from "../style/Styles";
 
 import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
+import { useUserIngredients } from "./CustomHook/useUserIngredients";
+// import themes from "../style/themes";
 
 const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
 
@@ -50,7 +62,15 @@ export const Stock = memo(() => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isSwiping, setIsSwiping] = useState(false);
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const ingredients = useUserIngredients();
+  const [isExtended, setIsExtended] = React.useState(true);
+
+  const [rowHeights, setRowHeights] = useState<{ [key: string]: number }>({});
+
+  const handleLayout = (id: string, event: LayoutChangeEvent) => {
+    const layoutHeight = event.nativeEvent.layout.height;
+    setRowHeights((prevHeights) => ({ ...prevHeights, [id]: layoutHeight }));
+  };
 
   // カテゴリ編集画面用
   const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
@@ -77,26 +97,6 @@ export const Stock = memo(() => {
     checked: false,
   }));
 
-  // Stock.tsx 内の fetchIngredients 関数
-  const fetchIngredients = async () => {
-    const q = query(
-      collection(db, "ingredients"),
-      where("userId", "==", auth.currentUser?.uid)
-    );
-    const querySnapshot = await getDocs(q);
-    const items: Ingredient[] = [];
-    querySnapshot.forEach((doc) => {
-      let data = doc.data() as Ingredient;
-      // expiryDateがTimestampの場合、Dateオブジェクトに変換
-      if (data.expiryDate && data.expiryDate instanceof Timestamp) {
-        data = { ...data, expiryDate: data.expiryDate.toDate() };
-      }
-      items.push({ ...data, id: doc.id });
-    });
-    console.log("取得した食材データ:", items);
-    setIngredients(items);
-  };
-
   const showAddModal = () => setIsAddModalVisible(true);
   const hideAddModal = () => setIsAddModalVisible(false);
   const showEditModal = () => setIsEditModalVisible(true);
@@ -107,19 +107,15 @@ export const Stock = memo(() => {
     const ingredientRef = doc(db, "ingredients", ingredientId);
     await deleteDoc(ingredientRef);
     // リストを更新
-    fetchIngredients();
+
+    setIsSwiping(false);
   };
 
   useEffect(() => {
     console.log("現在の食材リスト状態:", ingredients); // 状態が更新された後にログを出力
   }, [ingredients]); // 依存配列に `ingredients` を指定
 
-  useEffect(() => {
-    fetchIngredients();
-  }, []); // 依存配列を空にして、コンポーネントのマウント時にのみ実行
-
   const [editMode, setEditMode] = useState(false); // 編集モードのフラグ
-
   // 食材をタップしたときの処理（既存の関数を修正）
   const handleIngredientTap = (ingredient: Ingredient) => {
     if (!isSwiping) {
@@ -186,9 +182,13 @@ export const Stock = memo(() => {
     }
   }, [isSwitchOn]);
 
+  useEffect(() => {
+    console.log("選択された食材のカテゴリIDリスト:", selectedItem?.categories);
+  }, [selectedItem]);
+
   return (
     <Provider>
-      <Appbar.Header>
+      <Appbar.Header style={{ backgroundColor: "#DDAF56" }}>
         {isSearchBarVisible ? (
           <Searchbar
             placeholder="Search"
@@ -197,6 +197,7 @@ export const Stock = memo(() => {
             autoFocus
             onBlur={closeSearchBar}
             style={styles.stockSearchInput}
+            // theme={searchBarTheme}
           />
         ) : (
           <>
@@ -227,7 +228,6 @@ export const Stock = memo(() => {
         >
           <AddUpdateStock
             hideModal={hideAddModal}
-            onAdd={fetchIngredients}
             addIngredientCategory={addIngredientCategory}
           />
         </Modal>
@@ -253,7 +253,6 @@ export const Stock = memo(() => {
               ingredient={selectedItem}
               hideModal={hideEditModal}
               addIngredientCategory={addIngredientCategory}
-              onEditComplete={fetchIngredients}
             />
           )}
         </Modal>
@@ -263,22 +262,54 @@ export const Stock = memo(() => {
           <Dialog.Content>
             <Text>
               消費期限:{" "}
-              {selectedItem?.expiryDate instanceof Date
-                ? selectedItem.expiryDate.toDateString()
-                : selectedItem?.expiryDate}
+              {selectedItem?.expiryDate
+                ? displayDateInJapanese(selectedItem.expiryDate)
+                : "日付なし"}
             </Text>
-
             <Text>数量: {selectedItem?.quantity}</Text>
+            <Text>
+              カテゴリー:{" "}
+              {selectedItem?.categories
+                .map((categoryItem) => {
+                  console.log("カテゴリID:", categoryItem.id);
+                  const category = fetchedCategories.find(
+                    (cat) => cat.id === categoryItem.id
+                  );
+                  if (!category) {
+                    console.error(
+                      `カテゴリID ${categoryItem.id} に一致するタイトルが見つかりません。`
+                    );
+                    return "不明なカテゴリ";
+                  }
+                  return category.title;
+                })
+                .join(", ")}
+            </Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={handleEditIngredient}>編集</Button>
             <Button onPress={hideItemDialog}>閉じる</Button>
           </Dialog.Actions>
         </Dialog>
+        {/* <AnimatedFAB
+          icon={"plus"}
+          label={"食材の追加"}
+          extended={isExtended}
+          onPress={() => {
+            if (!modalVisible) {
+              showAddModal(); // モーダルが表示されていない時のみ機能する
+            }
+          }}
+          visible={!isAddModalVisible && !isEditModalVisible && !dialogVisible} // 常に表示する場合はtrue
+          animateFrom={"left"}
+          iconMode={"dynamic"}
+          style={[fabStyle]}
+        /> */}
       </Portal>
-      <View style={{ padding: 20, backgroundColor: "white", flex: 1 }}>
+      <View style={{ backgroundColor: "#F8F9F9", flex: 1, maxHeight: "100%" }}>
         <SwipeListView
-          style={{ flex: 1 }}
+          // onScroll={onScroll}
+          style={{ flex: 1, backgroundColor: "#F8F9F9" }}
           data={sortedIngredients}
           onRowOpen={() => {
             setIsSwiping(true);
@@ -290,7 +321,7 @@ export const Stock = memo(() => {
             setIsSwiping(true);
           }}
           swipeGestureEnded={() => {
-            setIsSwiping(true);
+            setIsSwiping(false); // ここをfalseに修正
           }}
           renderItem={(data, rowMap) => (
             <TouchableRipple
@@ -299,20 +330,26 @@ export const Stock = memo(() => {
                   handleIngredientTap(data.item);
                 }
               }}
-              style={styles.stockRipple}
+              onLayout={(event) => handleLayout(data.item.id, event)}
+              style={[styles.stockRipple, { backgroundColor: "#F8F9F9" }]}
             >
-              <View>
-                <Text style={styles.stockItemText}>
-                  {data.item.ingredientName}
-                </Text>
-                <Text style={styles.stockItemExpiryDate}>
-                  消費期限: {displayDateInJapanese(data.item.expiryDate)}
-                </Text>
+              <View style={styles.StockListItemContainer}>
+                <View style={styles.stockItemContainer}>
+                  <Text style={styles.stockItemText}>
+                    {data.item.ingredientName}
+                  </Text>
+                  <Text style={styles.stockItemExpiryDate}>
+                    消費期限: {displayDateInJapanese(data.item.expiryDate)}
+                  </Text>
+                </View>
+                <Icon name="chevron-right" size={24} color="gray" />
               </View>
             </TouchableRipple>
           )}
           renderHiddenItem={(data, rowMap) => (
-            <View style={styles.rowBack}>
+            <View
+              style={[styles.rowBack, { height: rowHeights[data.item.id] }]}
+            >
               <TouchableOpacity
                 style={styles.deleteButton}
                 onPress={() => handleDeleteIngredient(data.item.id)}
