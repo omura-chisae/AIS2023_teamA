@@ -8,7 +8,8 @@ import {
   Dialog,
   TouchableRipple,
   Button,
-  Switch,
+  Menu,
+  IconButton,
 } from "react-native-paper";
 import {
   View,
@@ -81,7 +82,6 @@ export const Stock = memo(() => {
   const [filteredIngredients, setFilteredIngredients] = useState(ingredients);
   // ソートした食材リストを保存する変数
   const [sortedIngredients, setSortedIngredients] = useState(ingredients);
-  const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   // カテゴリを取得
   const fetchedCategories = useCategories();
@@ -162,25 +162,30 @@ export const Stock = memo(() => {
     }
   }, [selectedCategory]);
 
-  const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
+  // 並び替えメニュー用
+  const [menuVisible, setMenuVisible] = useState(false);
+  const closeMenu = () => setMenuVisible(false);
+  const openMenu = () => setMenuVisible(true);
 
-  useEffect(() => {
-    // スイッチがオンの時に消費期限順に並び変える
-    if (isSwitchOn) {
-      const updatedIngredients = Array.from(filteredIngredients);
-      updatedIngredients.sort((a, b) => {
-        const expiryDateA =
-          a.expiryDate instanceof Date ? a.expiryDate.getTime() : 0;
-        const expiryDateB =
-          b.expiryDate instanceof Date ? b.expiryDate.getTime() : 0;
-        return expiryDateA - expiryDateB;
-      });
-      setSortedIngredients(updatedIngredients);
-    } else {
-      // スイッチがオフの時は元の順番（filteredIngredients）を代入
-      setSortedIngredients(filteredIngredients);
-    }
-  }, [isSwitchOn]);
+  const sortbyDefault = () => {
+    // 元の順番（filteredIngredients）を代入
+    setSortedIngredients(filteredIngredients);
+    setMenuVisible(false);
+  };
+
+  const sortbyExpiryDate = () => {
+    // 消費期限順に並び変える
+    const updatedIngredients = Array.from(filteredIngredients);
+    updatedIngredients.sort((a, b) => {
+      const expiryDateA =
+        a.expiryDate instanceof Date ? a.expiryDate.getTime() : 0;
+      const expiryDateB =
+        b.expiryDate instanceof Date ? b.expiryDate.getTime() : 0;
+      return expiryDateA - expiryDateB;
+    });
+    setSortedIngredients(updatedIngredients);
+    setMenuVisible(false);
+  };
 
   useEffect(() => {
     console.log("選択された食材のカテゴリIDリスト:", selectedItem?.categories);
@@ -213,8 +218,15 @@ export const Stock = memo(() => {
               />
             </View>
             <Appbar.Action icon="pencil" onPress={showCategoryModal} />
-            <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
-            <Text>消費期限順に並び変え</Text>
+            <Menu
+              visible={menuVisible}
+              onDismiss={closeMenu}
+              anchor={<IconButton icon="sort" onPress={openMenu}></IconButton>}
+            >
+              <Menu.Item onPress={sortbyDefault} title="デフォルト" />
+              <Menu.Item onPress={sortbyExpiryDate} title="消費期限順" />
+              <Menu.Item onPress={() => {}} title="Item 3" />
+            </Menu>
           </>
         )}
       </Appbar.Header>
