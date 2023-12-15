@@ -17,6 +17,7 @@ import {
 import { db, auth } from "../firebase";
 
 import { useCategories } from "./components/useCategories";
+import { PrimaryButton } from "./components/PrimaryButton";
 
 export type categoriesType = {
   id: string;
@@ -151,8 +152,8 @@ export const CategoryMenu = memo(() => {
           <Text>{`カテゴリ「${selectedCategory?.title}」を削除しますか？ `}</Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={hideDialog}>キャンセル</Button>
-          <Button
+          <PrimaryButton onPress={hideDialog}>キャンセル</PrimaryButton>
+          <PrimaryButton
             onPress={() => {
               if (selectedCategory) {
                 deleteCategory(selectedCategory.id);
@@ -160,7 +161,7 @@ export const CategoryMenu = memo(() => {
             }}
           >
             削除する
-          </Button>
+          </PrimaryButton>
         </Dialog.Actions>
       </Dialog>
 
@@ -183,8 +184,8 @@ export const CategoryMenu = memo(() => {
           <TextInput value={categoryName} onChangeText={changeText}></TextInput>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={hideAddDialog}>キャンセル</Button>
-          <Button onPress={addCategory}>追加する</Button>
+          <PrimaryButton onPress={hideAddDialog}>キャンセル</PrimaryButton>
+          <PrimaryButton onPress={addCategory}>追加する</PrimaryButton>
         </Dialog.Actions>
       </Dialog>
     </>
