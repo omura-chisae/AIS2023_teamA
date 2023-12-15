@@ -1,6 +1,7 @@
 import React, { useState, memo } from "react";
 import { Calendar } from "react-native-calendars";
 import { Text, Button, Modal } from "react-native-paper";
+import { PrimaryButton } from "./PrimaryButton";
 
 type DateProps = {
   changeDate: (date: Date) => void;
@@ -17,9 +18,9 @@ const ShowDate: React.FC<DateProps> = memo((props) => {
 
   return (
     <>
-      <Button mode="contained" onPress={() => setShowCalendar(!showCalendar)}>
+      <PrimaryButton onPress={() => setShowCalendar(!showCalendar)}>
         賞味期限を指定する
-      </Button>
+      </PrimaryButton>
 
       {showCalendar && (
         <Calendar

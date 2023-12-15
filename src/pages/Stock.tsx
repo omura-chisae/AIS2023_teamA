@@ -44,6 +44,7 @@ import styles from "../style/Styles";
 import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
+import { PrimaryButton } from "./components/PrimaryButton";
 // import themes from "../style/themes";
 
 const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
@@ -287,8 +288,8 @@ export const Stock = memo(() => {
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={handleEditIngredient}>編集</Button>
-            <Button onPress={hideItemDialog}>閉じる</Button>
+            <PrimaryButton onPress={handleEditIngredient}>編集</PrimaryButton>
+            <PrimaryButton onPress={hideItemDialog}>閉じる</PrimaryButton>
           </Dialog.Actions>
         </Dialog>
         {/* <AnimatedFAB
