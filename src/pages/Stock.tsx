@@ -38,6 +38,7 @@ import { useCategories } from "./components/useCategories";
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
 import { themes } from "../style/themes";
 import { PrimaryButton } from "./components/PrimaryButton";
+import { useFabContext } from "../FabContext";
 
 const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
 const AnimatedFAB = Animated.createAnimatedComponent(FAB);
@@ -59,6 +60,7 @@ export const Stock = memo(() => {
   const ingredients = useUserIngredients();
   const [sortMenuVisible, setSortMenuVisible] = useState(false);
   const [sortMode, setSortMode] = useState("");
+  // const { setIsFabDisabled } = useFabContext();
 
   const [rowHeights, setRowHeights] = useState<{ [key: string]: number }>({});
 

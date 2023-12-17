@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { themes } from "../style/themes";
+import { useFabContext } from "../FabContext";
 
 interface AnimatedIconProps {
   name: string;
@@ -203,18 +204,21 @@ const TabButton = (
     label: string;
   }
 ) => {
+  const { isFabDisabled } = useFabContext();
   const navigation = useNavigation();
   const { iconName, iconSet, accessibilityState, label } = props;
   const focused = accessibilityState?.selected ?? false;
   const navigationLabel = label === "Recipes" ? "SearchRecipes" : label;
   const handlePress = () => {
-    navigation.navigate(navigationLabel as never);
+    if (!isFabDisabled) {
+      navigation.navigate(navigationLabel as never);
+    }
   };
-
   return (
     <TouchableOpacity
       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
       onPress={handlePress} // onPress ハンドラを追加
+      disabled={isFabDisabled}
     >
       <View style={{ alignItems: "center" }}>
         <AnimatedIcon

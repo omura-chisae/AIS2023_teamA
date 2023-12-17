@@ -146,7 +146,7 @@ export const SearchRecipes = memo(() => {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        marginBottom: 70,
+        marginBottom: 30,
       }}
     >
       <ScrollView style={{ flex: 1, width: "100%" }}>
