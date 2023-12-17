@@ -18,6 +18,7 @@ import {
   LayoutChangeEvent,
   Animated,
   Pressable,
+  Dimensions,
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import { doc, deleteDoc } from "firebase/firestore";
@@ -219,6 +220,16 @@ export const Stock = memo(() => {
     };
   }, [isExtended, animatedWidth]);
 
+  const isFABDisabled =
+    isAddModalVisible || isEditModalVisible || dialogVisible || categoryVisible;
+
+  const handleFABPress = () => {
+    if (!isFABDisabled) {
+      showAddModal();
+    }
+    // FABがdisabledの場合、何もしない
+  };
+
   const fabStyle = {
     position: "absolute",
     right: 16,
@@ -369,28 +380,30 @@ export const Stock = memo(() => {
             <PrimaryButton onPress={hideItemDialog}>閉じる</PrimaryButton>
           </Dialog.Actions>
         </Dialog>
-        <Pressable
-          onPress={showAddModal}
-          style={({ pressed }) => [
-            {
-              position: "absolute",
-              right: 16,
-              bottom: 16,
-              width: animatedWidth, // Animated.Valueによる動的な幅
-              height: 96, // FABの高さ
-              borderRadius: isExtended ? 48 : 96 / 2,
-              opacity: pressed ? 0.5 : 1, // オプショナル: タッチ時の透明度変更
-            },
-          ]}
-        >
-          <AnimatedFAB
-            icon="plus"
-            style={fabStyle}
-            color="white"
-            size="medium"
-            label={currentWidth > 150 ? "食材の追加" : undefined}
-          />
-        </Pressable>
+        {!isFABDisabled && (
+          <Pressable
+            onPress={handleFABPress}
+            style={({ pressed }) => [
+              {
+                position: "absolute",
+                right: 16,
+                bottom: 16,
+                width: animatedWidth, // Animated.Valueによる動的な幅
+                height: 96, // FABの高さ
+                borderRadius: isExtended ? 48 : 96 / 2,
+                opacity: pressed ? 0.5 : 1, // オプショナル: タッチ時の透明度変更
+              },
+            ]}
+          >
+            <AnimatedFAB
+              icon="plus"
+              style={fabStyle}
+              color="white"
+              size="medium"
+              label={currentWidth > 150 ? "食材の追加" : undefined}
+            />
+          </Pressable>
+        )}
       </Portal>
       <View style={{ backgroundColor: "#F8F9F9", flex: 1, maxHeight: "100%" }}>
         <SwipeListView

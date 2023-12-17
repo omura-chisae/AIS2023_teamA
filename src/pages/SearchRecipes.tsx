@@ -141,7 +141,14 @@ export const SearchRecipes = memo(() => {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginBottom: 70,
+      }}
+    >
       <ScrollView style={{ flex: 1, width: "100%" }}>
         <Text style={{ fontSize: 20, marginBottom: 10, marginTop: 10 }}>
           種類
