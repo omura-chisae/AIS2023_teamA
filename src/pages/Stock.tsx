@@ -36,6 +36,7 @@ import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
 import { themes } from "../style/themes";
+import { PrimaryButton } from "./components/PrimaryButton";
 
 const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
 const AnimatedFAB = Animated.createAnimatedComponent(FAB);
@@ -364,8 +365,8 @@ export const Stock = memo(() => {
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={handleEditIngredient}>編集</Button>
-            <Button onPress={hideItemDialog}>閉じる</Button>
+            <PrimaryButton onPress={handleEditIngredient}>編集</PrimaryButton>
+            <PrimaryButton onPress={hideItemDialog}>閉じる</PrimaryButton>
           </Dialog.Actions>
         </Dialog>
         <Pressable
@@ -390,20 +391,6 @@ export const Stock = memo(() => {
             label={currentWidth > 150 ? "食材の追加" : undefined}
           />
         </Pressable>
-        {/* <TouchableOpacity
-          style={touchableStyle}
-          onPress={showAddModal}
-          activeOpacity={1} // タッチ時の透明度変更を無効化
-        >
-          <AnimatedFAB
-            icon="plus"
-            style={fabStyle}
-            color="white"
-            size="large"
-            label={currentWidth > 150 ? "食材の追加" : undefined}
-            // onPress={showAddModal}
-          />
-        </TouchableOpacity> */}
       </Portal>
       <View style={{ backgroundColor: "#F8F9F9", flex: 1, maxHeight: "100%" }}>
         <SwipeListView

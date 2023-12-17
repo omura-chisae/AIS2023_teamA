@@ -10,6 +10,7 @@ import CountButton from "./components/countButton";
 import { itemProps } from "./components/addStock";
 
 import { useCategories } from "./components/useCategories";
+import { PrimaryButton } from "./components/PrimaryButton";
 
 // Firestoreに食材データを追加
 const addIngredient = async (

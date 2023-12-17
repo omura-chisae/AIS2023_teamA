@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, FlatList } from "react-native";
 import axios from "axios";
 import { useRecipeInfo } from "../../../RecipeInfoContext";
+import Config from "react-native-config";
 
 interface Message {
   role: string;
@@ -12,8 +13,9 @@ interface Message {
 const OpenAI = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const APIKey = "";
+  const APIKey = Config.API_KEY;
   const model = "gpt-3.5-turbo-0301";
+  console.log(APIKey);
 
   const sendMessageToChatGPT = async (message: any) => {
     try {
