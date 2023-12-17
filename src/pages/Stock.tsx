@@ -8,32 +8,23 @@ import {
   Dialog,
   TouchableRipple,
   Button,
-  Switch,
+  FAB,
 } from "react-native-paper";
 import {
   View,
-  ScrollView,
   Text,
-  StyleSheet,
-  Animated,
-  StyleProp,
-  ViewStyle,
   NativeScrollEvent,
   NativeSyntheticEvent,
   LayoutChangeEvent,
+  Animated,
+  Pressable,
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  Timestamp,
-  doc,
-  deleteDoc,
-} from "firebase/firestore";
-import { db, auth } from "../firebase";
+import { doc, deleteDoc } from "firebase/firestore";
+import { db } from "../firebase";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { Menu, IconButton } from "react-native-paper";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -44,9 +35,10 @@ import styles from "../style/Styles";
 import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
-// import themes from "../style/themes";
+import { themes } from "../style/themes";
 
 const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
+const AnimatedFAB = Animated.createAnimatedComponent(FAB);
 
 export const Stock = memo(() => {
   const [visible, setVisible] = useState(false);
@@ -63,7 +55,8 @@ export const Stock = memo(() => {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isSwiping, setIsSwiping] = useState(false);
   const ingredients = useUserIngredients();
-  const [isExtended, setIsExtended] = React.useState(true);
+  const [sortMenuVisible, setSortMenuVisible] = useState(false);
+  const [sortMode, setSortMode] = useState("");
 
   const [rowHeights, setRowHeights] = useState<{ [key: string]: number }>({});
 
@@ -73,15 +66,9 @@ export const Stock = memo(() => {
   };
 
   // カテゴリ編集画面用
-  const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
+  // const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
   const hideCategoryModal = useCallback(() => setCategoryVisible(false), []);
   const [categoryVisible, setCategoryVisible] = useState(false);
-
-  // RNPickerSelectでフィルターした食材リストを保存する変数
-  const [filteredIngredients, setFilteredIngredients] = useState(ingredients);
-  // ソートした食材リストを保存する変数
-  const [sortedIngredients, setSortedIngredients] = useState(ingredients);
-  const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   // カテゴリを取得
   const fetchedCategories = useCategories();
@@ -145,46 +132,103 @@ export const Stock = memo(() => {
       return date;
     }
   };
+  const filteredAndSortedIngredients = useMemo(() => {
+    // カテゴリと検索クエリでフィルタリング
+    let result = ingredients.filter((ingredient) => {
+      const matchesCategory = selectedCategory
+        ? ingredient.categories.some(
+            (category) => category.id === selectedCategory
+          )
+        : true;
+      const matchesSearchQuery = searchQuery
+        ? ingredient.ingredientName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+        : true;
 
-  useEffect(() => {
-    // 選択したカテゴリを含む食材を抽出
-    if (selectedCategory) {
-      const updatedIngredients = ingredients.filter((ingredient) => {
-        return ingredient.categories.some(
-          (category) => category.id === selectedCategory
+      return matchesCategory && matchesSearchQuery;
+    });
+
+    // ソートモードに基づいてソート
+    switch (sortMode) {
+      case "alphabetical":
+        result.sort((a, b) =>
+          a.ingredientName.localeCompare(b.ingredientName, "ja")
         );
-      });
-      setFilteredIngredients(updatedIngredients);
-      setSortedIngredients(updatedIngredients);
-    } else {
-      setFilteredIngredients(ingredients);
-      setSortedIngredients(ingredients); // sortedIngredientsを参照してリスト表示するため代入しておく
+        break;
+      case "expiryDate":
+        result.sort(
+          (a, b) =>
+            (a.expiryDate?.getTime() || 0) - (b.expiryDate?.getTime() || 0)
+        );
+        break;
+      case "none":
+        // ニュートラル状態の場合はソートを適用しない
+        break;
+      default:
+        // 他のソート基準が必要な場合はここに追加
+        break;
     }
-  }, [selectedCategory]);
 
-  const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
+    return result;
+  }, [ingredients, selectedCategory, searchQuery, sortMode]);
 
-  useEffect(() => {
-    // スイッチがオンの時に消費期限順に並び変える
-    if (isSwitchOn) {
-      const updatedIngredients = Array.from(filteredIngredients);
-      updatedIngredients.sort((a, b) => {
-        const expiryDateA =
-          a.expiryDate instanceof Date ? a.expiryDate.getTime() : 0;
-        const expiryDateB =
-          b.expiryDate instanceof Date ? b.expiryDate.getTime() : 0;
-        return expiryDateA - expiryDateB;
-      });
-      setSortedIngredients(updatedIngredients);
-    } else {
-      // スイッチがオフの時は元の順番（filteredIngredients）を代入
-      setSortedIngredients(filteredIngredients);
-    }
-  }, [isSwitchOn]);
+  // AnimatedFABのサイズを調整
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const showCategoryModal = useCallback(() => {
+    setCategoryVisible(true);
+    setModalVisible(true); // モーダル表示状態を更新
+  }, []);
+
+  const searchBarTheme = {
+    ...themes, // 既存のテーマを展開
+    colors: {
+      ...themes.colors, // 既存の色を展開
+      primary: "#F7DC6F", // 検索バーに適用する新しい色
+    },
+  };
 
   useEffect(() => {
     console.log("選択された食材のカテゴリIDリスト:", selectedItem?.categories);
   }, [selectedItem]);
+
+  const [isExtended, setIsExtended] = useState(true);
+  const animatedWidth = useState(new Animated.Value(200))[0];
+  const [currentWidth, setCurrentWidth] = useState(200);
+
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const currentScrollPosition = event.nativeEvent.contentOffset.y;
+    setIsExtended(currentScrollPosition <= 0); // スクロール位置に基づいて状態を設定
+  };
+
+  useEffect(() => {
+    Animated.timing(animatedWidth, {
+      toValue: isExtended ? 200 : 56,
+      duration: 150,
+      useNativeDriver: false,
+    }).start();
+
+    const listener = animatedWidth.addListener(({ value }) => {
+      setCurrentWidth(value);
+    });
+
+    return () => {
+      animatedWidth.removeListener(listener);
+    };
+  }, [isExtended, animatedWidth]);
+
+  const fabStyle = {
+    position: "absolute",
+    right: 16,
+    bottom: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    width: animatedWidth,
+    height: 56,
+    borderRadius: isExtended ? 48 : 56 / 2,
+    backgroundColor: "#DDAF56",
+  };
 
   return (
     <Provider>
@@ -197,11 +241,11 @@ export const Stock = memo(() => {
             autoFocus
             onBlur={closeSearchBar}
             style={styles.stockSearchInput}
-            // theme={searchBarTheme}
+            theme={searchBarTheme}
           />
         ) : (
           <>
-            <Appbar.Action icon="plus" onPress={showAddModal} />
+            {/* <Appbar.Action icon="plus" onPress={showAddModal} /> */}
             <Appbar.Action icon="magnify" onPress={openSearchBar} />
             <View style={{ flex: 1, justifyContent: "center" }}>
               <RNPickerSelect
@@ -213,8 +257,41 @@ export const Stock = memo(() => {
               />
             </View>
             <Appbar.Action icon="pencil" onPress={showCategoryModal} />
-            <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
-            <Text>消費期限順に並び変え</Text>
+            <Menu
+              visible={sortMenuVisible}
+              onDismiss={() => setSortMenuVisible(false)}
+              theme={searchBarTheme}
+              anchor={
+                <IconButton
+                  icon={() => <FontAwesome name="unsorted" size={24} />}
+                  onPress={() => setSortMenuVisible(true)}
+                />
+              }
+            >
+              <Menu.Item
+                onPress={() => {
+                  setSortMode("none"); // ニュートラル状態を示す値に設定
+                  setSortMenuVisible(false);
+                }}
+                title="ソート解除"
+              />
+              <Menu.Item
+                onPress={() => {
+                  setSortMode("alphabetical");
+                  setSortMenuVisible(false);
+                }}
+                title="五十音順"
+                leadingIcon="sort-alphabetical-ascending"
+              />
+              <Menu.Item
+                onPress={() => {
+                  setSortMode("expiryDate");
+                  setSortMenuVisible(false);
+                }}
+                title="消費期限順"
+                leadingIcon="sort-calendar-ascending"
+              />
+            </Menu>
           </>
         )}
       </Appbar.Header>
@@ -291,26 +368,48 @@ export const Stock = memo(() => {
             <Button onPress={hideItemDialog}>閉じる</Button>
           </Dialog.Actions>
         </Dialog>
-        {/* <AnimatedFAB
-          icon={"plus"}
-          label={"食材の追加"}
-          extended={isExtended}
-          onPress={() => {
-            if (!modalVisible) {
-              showAddModal(); // モーダルが表示されていない時のみ機能する
-            }
-          }}
-          visible={!isAddModalVisible && !isEditModalVisible && !dialogVisible} // 常に表示する場合はtrue
-          animateFrom={"left"}
-          iconMode={"dynamic"}
-          style={[fabStyle]}
-        /> */}
+        <Pressable
+          onPress={showAddModal}
+          style={({ pressed }) => [
+            {
+              position: "absolute",
+              right: 16,
+              bottom: 16,
+              width: animatedWidth, // Animated.Valueによる動的な幅
+              height: 96, // FABの高さ
+              borderRadius: isExtended ? 48 : 96 / 2,
+              opacity: pressed ? 0.5 : 1, // オプショナル: タッチ時の透明度変更
+            },
+          ]}
+        >
+          <AnimatedFAB
+            icon="plus"
+            style={fabStyle}
+            color="white"
+            size="medium"
+            label={currentWidth > 150 ? "食材の追加" : undefined}
+          />
+        </Pressable>
+        {/* <TouchableOpacity
+          style={touchableStyle}
+          onPress={showAddModal}
+          activeOpacity={1} // タッチ時の透明度変更を無効化
+        >
+          <AnimatedFAB
+            icon="plus"
+            style={fabStyle}
+            color="white"
+            size="large"
+            label={currentWidth > 150 ? "食材の追加" : undefined}
+            // onPress={showAddModal}
+          />
+        </TouchableOpacity> */}
       </Portal>
       <View style={{ backgroundColor: "#F8F9F9", flex: 1, maxHeight: "100%" }}>
         <SwipeListView
-          // onScroll={onScroll}
+          onScroll={onScroll}
           style={{ flex: 1, backgroundColor: "#F8F9F9" }}
-          data={sortedIngredients}
+          data={filteredAndSortedIngredients}
           onRowOpen={() => {
             setIsSwiping(true);
           }}
@@ -321,7 +420,7 @@ export const Stock = memo(() => {
             setIsSwiping(true);
           }}
           swipeGestureEnded={() => {
-            setIsSwiping(false); // ここをfalseに修正
+            setIsSwiping(false);
           }}
           renderItem={(data, rowMap) => (
             <TouchableRipple

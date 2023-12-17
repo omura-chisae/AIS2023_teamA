@@ -12,7 +12,7 @@ interface Message {
 const OpenAI = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const APIKey = "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";
+  const APIKey = "";
   const model = "gpt-3.5-turbo-0301";
 
   const sendMessageToChatGPT = async (message: any) => {
@@ -63,18 +63,12 @@ const OpenAI = () => {
 
   const { recipeInfo } = useRecipeInfo();
 
-  // useEffect(() => {
-  //   if (recipeInfo) {
-  //     handleSend(recipeInfo);
-  //   }
-  // }, [recipeInfo, handleSend]);
-
-  //他のコンポーネントからの命令文を受け取る
+  // 他のコンポーネントからの命令文を受け取る
   useEffect(() => {
-  // 他のコンポーネントからの命令文
-  const commandFromOtherComponent = `${recipeInfo}の条件でレシピを考えてください`;
-  // 受け取った命令文を処理
-  handleSend(commandFromOtherComponent);
+    // 他のコンポーネントからの命令文
+    const commandFromOtherComponent = `${recipeInfo}の条件でレシピを考えてください`;
+    // 受け取った命令文を処理
+    handleSend(commandFromOtherComponent);
   }, [handleSend]);
 
   return (
@@ -83,14 +77,39 @@ const OpenAI = () => {
         data={messages}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={{ marginBottom: 8 }}>
-            <Text>
-              {item.role === "user" ? "You:" : "Assistant:"} {item.content}
-            </Text>
+          <View
+            style={{
+              marginBottom: 8,
+              alignSelf: item.role === "user" ? "flex-end" : "flex-start",
+            }}
+          >
+            <View
+              style={{
+                padding: 10,
+                borderRadius: 20,
+                backgroundColor: item.role === "user" ? "#D3D3D3" : "#87CEEB",
+                maxWidth: "80%",
+              }}
+            >
+              <Text>{item.content}</Text>
+            </View>
           </View>
         )}
       />
     </View>
+    // <View style={{ flex: 1, padding: 16 }}>
+    //   <FlatList
+    //     data={messages}
+    //     keyExtractor={(item) => item.id.toString()}
+    //     renderItem={({ item }) => (
+    //       <View style={{ marginBottom: 8 }}>
+    //         <Text>
+    //           {item.role === "user" ? "You:" : "Assistant:"} {item.content}
+    //         </Text>
+    //       </View>
+    //     )}
+    //   />
+    // </View>
   );
 };
 
