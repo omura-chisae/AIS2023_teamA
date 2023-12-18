@@ -68,7 +68,7 @@ const OpenAI = () => {
   // 他のコンポーネントからの命令文を受け取る
   useEffect(() => {
     // 他のコンポーネントからの命令文
-    const commandFromOtherComponent = `${recipeInfo}の条件でレシピを考えてください`;
+    const commandFromOtherComponent = `${recipeInfo}の条件で一人分のレシピを考えてください。条件の食材のみで作ってください。調味料は構いません。材料横の数字は、数量を表しています。 `;
     // 受け取った命令文を処理
     handleSend(commandFromOtherComponent);
   }, [handleSend]);
@@ -94,7 +94,7 @@ const OpenAI = () => {
                   maxWidth: "80%",
                 }}
               >
-                <Text>{item.content}</Text>
+                <Text　style={{fontSize:20}}>{item.content}</Text>
               </View>
             )}
           </View>
