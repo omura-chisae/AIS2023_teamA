@@ -1,4 +1,11 @@
-import React, { useState, useEffect, memo, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  memo,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import {
   Modal,
   Portal,
@@ -9,6 +16,7 @@ import {
   TouchableRipple,
   Button,
   FAB,
+  AnimatedFAB as NativeAnimatedFAB,
 } from "react-native-paper";
 import {
   View,
@@ -19,6 +27,7 @@ import {
   Animated,
   Pressable,
   Dimensions,
+  Platform,
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import { doc, deleteDoc } from "firebase/firestore";
@@ -41,7 +50,7 @@ import { PrimaryButton } from "./components/PrimaryButton";
 import { useFabContext } from "../FabContext";
 
 const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
-const AnimatedFAB = Animated.createAnimatedComponent(FAB);
+const CustomAnimatedFAB = Animated.createAnimatedComponent(FAB);
 
 export const Stock = memo(() => {
   const [visible, setVisible] = useState(false);
@@ -198,29 +207,102 @@ export const Stock = memo(() => {
   }, [selectedItem]);
 
   const [isExtended, setIsExtended] = useState(true);
-  const animatedWidth = useState(new Animated.Value(200))[0];
-  const [currentWidth, setCurrentWidth] = useState(200);
+  // const animatedWidth = useState(new Animated.Value(200))[0];
+  // const animatedWidth = useRef(new Animated.Value(200)).current;
+  // const [currentWidth, setCurrentWidth] = useState(200);
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const currentScrollPosition = event.nativeEvent.contentOffset.y;
     setIsExtended(currentScrollPosition <= 0); // スクロール位置に基づいて状態を設定
   };
 
-  useEffect(() => {
-    Animated.timing(animatedWidth, {
-      toValue: isExtended ? 200 : 56,
-      duration: 150,
-      useNativeDriver: false,
-    }).start();
+  const renderFAB = () => {
+    if (Platform.OS === "web") {
+      const animatedWidth = useState(new Animated.Value(200))[0];
+      const [currentWidth, setCurrentWidth] = useState(200);
+      const fabDisabledStyle = isFABDisabled ? { backgroundColor: "grey" } : {};
 
-    const listener = animatedWidth.addListener(({ value }) => {
-      setCurrentWidth(value);
-    });
+      const onPressHandler = () => {
+        if (!isFABDisabled) {
+          handleFABPress();
+        }
+      };
+      useEffect(() => {
+        Animated.timing(animatedWidth, {
+          toValue: isExtended ? 200 : 56,
+          duration: 150,
+          useNativeDriver: false,
+        }).start();
+      }, [isExtended]);
 
-    return () => {
-      animatedWidth.removeListener(listener);
-    };
-  }, [isExtended, animatedWidth]);
+      useEffect(() => {
+        const listener = animatedWidth.addListener(({ value }) => {
+          setCurrentWidth(value);
+        });
+
+        return () => {
+          animatedWidth.removeListener(listener);
+        };
+      }, []);
+
+      const fabStyle = {
+        position: "absolute",
+        right: 16,
+        bottom: 16,
+        justifyContent: "center",
+        alignItems: "center",
+        width: animatedWidth,
+        height: 56,
+        borderRadius: isExtended ? 48 : 56 / 2,
+        backgroundColor: isFABDisabled ? "lightgrey" : "#DDAF56",
+      };
+
+      return (
+        <Pressable
+          onPress={onPressHandler}
+          style={({ pressed }) => [
+            {
+              position: "absolute",
+              right: 16,
+              bottom: 16,
+              width: animatedWidth, // Animated.Valueによる動的な幅
+              height: 96, // FABの高さ
+              borderRadius: isExtended ? 48 : 96 / 2,
+              opacity: pressed ? 0.5 : 1, // オプショナル: タッチ時の透明度変更
+            },
+            fabDisabledStyle,
+          ]}
+        >
+          <CustomAnimatedFAB
+            icon="plus"
+            style={fabStyle}
+            color="white"
+            size="medium"
+            label={currentWidth > 150 ? "食材の追加" : undefined}
+          />
+        </Pressable>
+      );
+    } else {
+      // iOSまたはAndroidの場合の通常のFAB
+      return (
+        <NativeAnimatedFAB
+          icon="plus"
+          onPress={showAddModal}
+          extended={isExtended}
+          label={"食材の追加"}
+          style={{
+            position: "absolute",
+            right: 16,
+            bottom: 16,
+            backgroundColor: "#DDAF56",
+          }}
+          color="white"
+          rippleColor="#F7DC6F"
+          disabled={isFABDisabled}
+        />
+      );
+    }
+  };
 
   const isFABDisabled =
     isAddModalVisible || isEditModalVisible || dialogVisible || categoryVisible;
@@ -230,18 +312,6 @@ export const Stock = memo(() => {
       showAddModal();
     }
     // FABがdisabledの場合、何もしない
-  };
-
-  const fabStyle = {
-    position: "absolute",
-    right: 16,
-    bottom: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    width: animatedWidth,
-    height: 56,
-    borderRadius: isExtended ? 48 : 56 / 2,
-    backgroundColor: "#DDAF56",
   };
 
   return (
@@ -382,30 +452,7 @@ export const Stock = memo(() => {
             <PrimaryButton onPress={hideItemDialog}>閉じる</PrimaryButton>
           </Dialog.Actions>
         </Dialog>
-        {!isFABDisabled && (
-          <Pressable
-            onPress={handleFABPress}
-            style={({ pressed }) => [
-              {
-                position: "absolute",
-                right: 16,
-                bottom: 16,
-                width: animatedWidth, // Animated.Valueによる動的な幅
-                height: 96, // FABの高さ
-                borderRadius: isExtended ? 48 : 96 / 2,
-                opacity: pressed ? 0.5 : 1, // オプショナル: タッチ時の透明度変更
-              },
-            ]}
-          >
-            <AnimatedFAB
-              icon="plus"
-              style={fabStyle}
-              color="white"
-              size="medium"
-              label={currentWidth > 150 ? "食材の追加" : undefined}
-            />
-          </Pressable>
-        )}
+        {renderFAB()}
       </Portal>
       <View style={{ backgroundColor: "#F8F9F9", flex: 1, maxHeight: "100%" }}>
         <SwipeListView
