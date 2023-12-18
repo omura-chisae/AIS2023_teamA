@@ -111,10 +111,6 @@ export const Stock = memo(() => {
     setIsSwiping(false);
   };
 
-  useEffect(() => {
-    console.log("現在の食材リスト状態:", ingredients); // 状態が更新された後にログを出力
-  }, [ingredients]); // 依存配列に `ingredients` を指定
-
   const [editMode, setEditMode] = useState(false); // 編集モードのフラグ
   // 食材をタップしたときの処理（既存の関数を修正）
   const handleIngredientTap = (ingredient: Ingredient) => {
@@ -202,14 +198,7 @@ export const Stock = memo(() => {
     },
   };
 
-  useEffect(() => {
-    console.log("選択された食材のカテゴリIDリスト:", selectedItem?.categories);
-  }, [selectedItem]);
-
   const [isExtended, setIsExtended] = useState(true);
-  // const animatedWidth = useState(new Animated.Value(200))[0];
-  // const animatedWidth = useRef(new Animated.Value(200)).current;
-  // const [currentWidth, setCurrentWidth] = useState(200);
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const currentScrollPosition = event.nativeEvent.contentOffset.y;
@@ -432,18 +421,12 @@ export const Stock = memo(() => {
               カテゴリー:{" "}
               {selectedItem?.categories
                 .map((categoryItem) => {
-                  console.log("カテゴリID:", categoryItem.id);
                   const category = fetchedCategories.find(
                     (cat) => cat.id === categoryItem.id
                   );
-                  if (!category) {
-                    console.error(
-                      `カテゴリID ${categoryItem.id} に一致するタイトルが見つかりません。`
-                    );
-                    return "不明なカテゴリ";
-                  }
-                  return category.title;
+                  return category ? category.title : undefined;
                 })
+                .filter(Boolean) // これによって、undefined を取り除くことができます。
                 .join(", ")}
             </Text>
           </Dialog.Content>

@@ -35,7 +35,6 @@ export const useCategories = () => {
             categories.push(currentCategory);
           });
           setCategories(categories);
-          console.log("取得したカテゴリデータ:", categories);
         });
         return unsubscribe;
       }

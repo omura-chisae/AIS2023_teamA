@@ -1,6 +1,6 @@
-import { memo } from "react";
+import React, { memo } from "react";
+import { Text } from "react-native-paper";
 
 export const AdminPage = memo(() => {
-  return <p>Hello admin</p>;
-
+  return <Text>Hello admin</Text>;
 });
