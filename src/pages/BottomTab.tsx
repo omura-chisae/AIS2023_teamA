@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import {
   createBottomTabNavigator,
   BottomTabBarButtonProps,
@@ -9,7 +9,14 @@ import { Settings } from "./Settings";
 import { PaperProvider } from "react-native-paper";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { Animated, TouchableOpacity, Platform, Text, View } from "react-native";
+import {
+  Animated,
+  TouchableOpacity,
+  Platform,
+  Text,
+  View,
+  Keyboard,
+} from "react-native";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -92,6 +99,24 @@ const styles = StyleSheet.create({
 export const BottomTab = memo(() => {
   const Tab = createBottomTabNavigator();
 
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => setKeyboardVisible(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => setKeyboardVisible(false)
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Tab.Navigator
@@ -134,9 +159,11 @@ export const BottomTab = memo(() => {
             );
           },
           tabBarStyle: {
-            height: 70, // タブバーの高さを設定
-            backgroundColor: "#FEF9E7", // またはお好みの背景色
+            // height: 70, // タブバーの高さを設定
+            backgroundColor: "#FEF9E7",
             borderTopWidth: 0, // 上の境界線を消す
+            height: keyboardVisible ? 0 : 70, // キーボードが表示されている場合は高さを0に
+            display: keyboardVisible ? "none" : "flex", // キーボード表示時に非表示にする
 
             // 他のスタイル設定...
           },

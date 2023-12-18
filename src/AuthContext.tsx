@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import { AdminPage } from "./pages/AdminPage";
 import { UserPage } from "./pages/UserPage";
 import { Recipe } from "./pages/Recipe";
+import { StatusBar } from "react-native";
 
 type AuthContextProps = {
   user: User | null;
@@ -34,26 +35,29 @@ const AuthContext: React.FC<AuthContextProps> = ({ user }) => {
   }, [user]);
 
   return (
-    <Stack.Navigator
-      initialRouteName={isAdmin ? "Admin" : user ? "UserPage" : "Auth"}
-    >
-      <Stack.Screen
-        name="Auth"
-        component={Auth}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="UserPage"
-        component={UserPage}
-        options={{ headerLeft: () => null, headerShown: false }}
-      />
-      <Stack.Screen
-        name="Admin"
-        component={AdminPage}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen name="Recipe" component={Recipe} />
-    </Stack.Navigator>
+    <>
+      <StatusBar barStyle="dark-content" backgroundColor="#DDAF56" />
+      <Stack.Navigator
+        initialRouteName={isAdmin ? "Admin" : user ? "UserPage" : "Auth"}
+      >
+        <Stack.Screen
+          name="Auth"
+          component={Auth}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UserPage"
+          component={UserPage}
+          options={{ headerLeft: () => null, headerShown: false }}
+        />
+        <Stack.Screen
+          name="Admin"
+          component={AdminPage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Recipe" component={Recipe} />
+      </Stack.Navigator>
+    </>
   );
 };
 
