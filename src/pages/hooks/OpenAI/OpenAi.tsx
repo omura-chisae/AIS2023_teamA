@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, FlatList } from "react-native";
 import axios from "axios";
 import { useRecipeInfo } from "../../../RecipeInfoContext";
-import {API_KEY} from '@env'
+import { API_KEY } from "@env";
 
 interface Message {
   role: string;
@@ -89,7 +89,7 @@ const OpenAI = () => {
               style={{
                 padding: 10,
                 borderRadius: 20,
-                backgroundColor: item.role === "user" ? "#D3D3D3" : "#87CEEB",
+                backgroundColor: item.role === "user" ? "#D3D3D3" : "#F7DC6F",
                 maxWidth: "80%",
               }}
             >
