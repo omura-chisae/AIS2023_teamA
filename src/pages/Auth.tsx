@@ -41,7 +41,7 @@ const Auth: React.FC = () => {
     } catch (error) {
       console.error(error);
       // 登録されていないユーザーのログインエラーメッセージ
-      Alert.alert("エラー", "登録されていないユーザーです。");
+      Alert.alert("エラー", "エラーが起きました。再実行してください");
       setEmail("");
       setPassword("");
     }
@@ -65,7 +65,7 @@ const Auth: React.FC = () => {
     } catch (error) {
       console.error(error);
       // すでに登録されているユーザーの新規登録エラーメッセージ
-      Alert.alert("エラー", "このメールアドレスはすでに登録されています。");
+      Alert.alert("エラー", "エラーが起きました。再実行してください");
       setEmail("");
       setPassword("");
     }
@@ -88,9 +88,10 @@ const Auth: React.FC = () => {
         autoCapitalize="none"
         style={styles.authInput}
       />
-
-      <PrimaryButton onPress={Register}>新規登録</PrimaryButton>
-      <PrimaryButton onPress={Login}>ログイン</PrimaryButton>
+      <View style={styles.AuthbuttonContainer}>
+        <PrimaryButton onPress={Register}>新規登録</PrimaryButton>
+        <PrimaryButton onPress={Login}>ログイン</PrimaryButton>
+      </View>
     </View>
   );
 };
