@@ -85,16 +85,18 @@ const OpenAI = () => {
               alignSelf: item.role === "user" ? "flex-end" : "flex-start",
             }}
           >
-            <View
-              style={{
-                padding: 10,
-                borderRadius: 20,
-                backgroundColor: item.role === "user" ? "#D3D3D3" : "#F7DC6F",
-                maxWidth: "80%",
-              }}
-            >
-              <Text>{item.content}</Text>
-            </View>
+            {item.role !== "user" && ( // ユーザーのメッセージ以外を表示
+              <View
+                style={{
+                  padding: 10,
+                  borderRadius: 20,
+                  backgroundColor: "#F7DC6F",
+                  maxWidth: "80%",
+                }}
+              >
+                <Text>{item.content}</Text>
+              </View>
+            )}
           </View>
         )}
       />
