@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, FlatList } from "react-native";
 import axios from "axios";
 import { useRecipeInfo } from "../../../RecipeInfoContext";
-// import Config from "react-native-config";
+import {API_KEY} from '@env'
 
 interface Message {
   role: string;
@@ -13,7 +13,7 @@ interface Message {
 const OpenAI = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const APIKey = "";
+  const APIKey = API_KEY;
   const model = "gpt-3.5-turbo-0301";
   console.log(APIKey);
 
@@ -99,19 +99,6 @@ const OpenAI = () => {
         )}
       />
     </View>
-    // <View style={{ flex: 1, padding: 16 }}>
-    //   <FlatList
-    //     data={messages}
-    //     keyExtractor={(item) => item.id.toString()}
-    //     renderItem={({ item }) => (
-    //       <View style={{ marginBottom: 8 }}>
-    //         <Text>
-    //           {item.role === "user" ? "You:" : "Assistant:"} {item.content}
-    //         </Text>
-    //       </View>
-    //     )}
-    //   />
-    // </View>
   );
 };
 
