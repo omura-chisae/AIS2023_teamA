@@ -3,6 +3,7 @@ import React, { useState, memo } from "react";
 import { Text, View } from "react-native";
 
 import styles from "../../style/Styles";
+import { PrimaryButton } from "./PrimaryButton";
 
 type CountButtonProps = {
   quantity: number;
@@ -14,13 +15,13 @@ const countButton: React.FC<CountButtonProps> = memo((props) => {
   const { quantity, countUp, countDown } = props;
   return (
     <View style={styles.countButtonContainer}>
-      <Button mode="contained" onPress={countDown}>
+      <PrimaryButton onPress={countDown}>
         ー
-      </Button>
+      </PrimaryButton>
       <Text style={styles.countButtonText}>{quantity}</Text>
-      <Button mode="contained" onPress={countUp}>
+      <PrimaryButton onPress={countUp}>
         ＋
-      </Button>
+      </PrimaryButton>
     </View>
   );
 });

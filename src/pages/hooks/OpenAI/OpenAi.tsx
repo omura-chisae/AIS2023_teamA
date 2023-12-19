@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, FlatList } from "react-native";
 import axios from "axios";
+import { useRecipeInfo } from "../../../RecipeInfoContext";
+import Config from "react-native-config";
 
 interface Message {
   role: string;
@@ -10,9 +12,10 @@ interface Message {
 
 const OpenAI = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-
-  const APIKey = "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";
+  
+  const APIKey = Config.API_KEY;
   const model = "gpt-3.5-turbo-0301";
+  console.log(APIKey);
 
   const sendMessageToChatGPT = async (message: any) => {
     try {
@@ -60,26 +63,61 @@ const OpenAI = () => {
     }
   }, []);
 
-  // 他のコンポーネントからの命令文を受け取る
+  const { recipeInfo } = useRecipeInfo();
+
+  // useEffect(() => {
+  //   if (recipeInfo) {
+  //     handleSend(recipeInfo);
+  //   }
+  // }, [recipeInfo, handleSend]);
+
+  //他のコンポーネントからの命令文を受け取る
   useEffect(() => {
-    // 他のコンポーネントからの命令文
-    const commandFromOtherComponent = "Cook something with chicken and broccoli";
-    // 受け取った命令文を処理
-    handleSend(commandFromOtherComponent);
+  // 他のコンポーネントからの命令文
+  const commandFromOtherComponent = `${recipeInfo}の条件でレシピを考えてください`;
+  // 受け取った命令文を処理
+  handleSend(commandFromOtherComponent);
   }, [handleSend]);
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
-      <FlatList
-        data={messages}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 8 }}>
-            <Text>{item.role === "user" ? "You:" : "Assistant:"} {item.content}</Text>
-          </View>
-        )}
-      />
-    </View>
+    // <View style={{ flex: 1, padding: 16 }}>
+    //   <FlatList
+    //     data={messages}
+    //     keyExtractor={(item) => item.id.toString()}
+    //     renderItem={({ item }) => (
+    //       <View style={{ marginBottom: 8 }}>
+    //         <Text>
+    //           {item.role === "user" ? "You:" : "Assistant:"} {item.content}
+    //         </Text>
+    //       </View>
+    //     )}
+    //   />
+    // </View>
+      <View style={{ flex: 1, padding: 16 }}>
+        <FlatList
+          data={messages}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View
+              style={{
+                marginBottom: 8,
+                alignSelf: item.role === "user" ? "flex-end" : "flex-start",
+              }}
+            >
+              <View
+                style={{
+                  padding: 10,
+                  borderRadius: 20,
+                  backgroundColor: item.role === "user" ? "#D3D3D3" : "#87CEEB",
+                  maxWidth: "80%",
+                }}
+              >
+                <Text>{item.content}</Text>
+              </View>
+            </View>
+          )}
+        />
+      </View>
   );
 };
 

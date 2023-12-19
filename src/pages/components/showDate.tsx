@@ -2,6 +2,8 @@ import React, { useState, memo } from "react";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { Text, Button, Modal } from "react-native-paper";
 import Styles from "../../style/Styles";
+import { PrimaryButton } from "./PrimaryButton";
+import { View } from "react-native";
 
 type DateProps = {
   changeDate: (date: Date) => void;
@@ -17,15 +19,10 @@ const ShowDate: React.FC<DateProps> = memo((props) => {
   }>({});
 
   return (
-    <>
-      <Button
-        mode="contained"
-        onPress={() => setShowCalendar(!showCalendar)}
-        icon="plus"
-        contentStyle={{ flexDirection: "row-reverse" }}
-      >
+    <View>
+      <PrimaryButton onPress={() => setShowCalendar(!showCalendar)}>
         賞味期限を指定する
-      </Button>
+      </PrimaryButton>
 
       {showCalendar && (
         <Calendar
@@ -54,7 +51,7 @@ const ShowDate: React.FC<DateProps> = memo((props) => {
           enableSwipeMonths={true} // スワイプで先月・来月を表示
         />
       )}
-    </>
+    </View>
   );
 });
 

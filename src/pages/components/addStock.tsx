@@ -1,5 +1,8 @@
 import React, { useState, memo } from "react";
-import { List, Checkbox, TextInput } from "react-native-paper";
+import { List, Checkbox, TextInput, PaperProvider } from "react-native-paper";
+
+import Styles from "../../style/Styles";
+import { themes } from "../../style/themes";
 
 type addStockProps = {
   changeIngredientName: (ingredientName: string) => void;
@@ -13,13 +16,14 @@ const addStock: React.FC<addStockProps> = memo((props) => {
   const { changeIngredientName, handleCheckboxToggle, categoryLists } = props;
 
   return (
-    <>
+    <PaperProvider theme={themes}>
       <TextInput
         onChangeText={changeIngredientName}
         placeholder="食材名を入力"
+        style={Styles.addStockMargin}
       />
 
-      <List.Section>
+      <List.Section style={Styles.addStockMargin}>
         <List.Accordion
           title="カテゴリを選択"
           left={(props) => <List.Icon {...props} icon="folder" />}
@@ -38,7 +42,7 @@ const addStock: React.FC<addStockProps> = memo((props) => {
           ))}
         </List.Accordion>
       </List.Section>
-    </>
+    </PaperProvider>
   );
 });
 

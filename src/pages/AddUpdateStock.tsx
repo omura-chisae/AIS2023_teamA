@@ -10,6 +10,7 @@ import CountButton from "./components/countButton";
 import { itemProps } from "./components/addStock";
 
 import { useCategories } from "./components/useCategories";
+import { PrimaryButton } from "./components/PrimaryButton";
 
 import Styles from "../style/Styles";
 
@@ -107,15 +108,10 @@ export const AddUpdateStock: React.FC<addUpdateStockProps> = memo((props) => {
         countDown={countDown}
         quantity={quantity}
       />
-      <Button
-        mode="contained"
-        onPress={() => {
+      <PrimaryButton onPress={() => {
           addIngredient(ingredientName, categoryLists, date, quantity);
           hideModal();
-        }}
-      >
-        追加
-      </Button>
+        }}>追加</PrimaryButton>
     </View>
   );
 });

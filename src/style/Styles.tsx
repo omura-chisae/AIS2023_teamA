@@ -20,7 +20,8 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "white",
     borderRadius: 20,
-    marginHorizontal: 20, // モーダルの左右の余白を調整
+    margin: 20,
+    maxHeight: "90%",
   },
   stockRipple: {
     borderBottomWidth: 1,
@@ -76,13 +77,19 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
+  stockIcon: {
+    marginHorizontal: 10,
+  },
+  stockDialogContents: {
+    marginVertical: 10,
+  },
 
   // CountButton コンポーネントで使用されるスタイル
   countButtonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    margin: 10,
+    margin: 20,
   },
   countButton: {
     marginHorizontal: 10,
@@ -91,6 +98,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginRight: 10,
     marginLeft: 10,
+  },
+
+  // addStock コンポーネントで使用されるスタイル
+  addStockMargin: {
+    marginBottom: 20,
   },
 
   // AddUpdateStock コンポーネントで使用されるスタイル
@@ -104,6 +116,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginTop: 20,
     marginBottom: 20,
+  },
+
+  searchRecipeHeader: {
+    textAlign: "center",
+    flex: 1,
+    fontWeight: "bold",
+    fontSize: 20,
   },
 });
 

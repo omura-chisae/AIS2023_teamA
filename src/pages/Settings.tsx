@@ -1,8 +1,20 @@
-import { memo } from "react";
+import React, { memo } from "react";
 import { View } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { PrimaryButton } from "./components/PrimaryButton";
 
 export const Settings = memo(() => {
+  const handleLogoutPress = () => {
+    // ログアウト処理
+  };
+
+  const handleToggleNotificationOnPress = () => {
+    // 消費期限通知 ON 処理
+  };
+
+  const handleToggleNotificationOffPress = () => {
+    // 消費期限通知 OFF 処理
+  };
+
   return (
     <View
       style={{
@@ -12,12 +24,14 @@ export const Settings = memo(() => {
         backgroundColor: "#F8F9F9",
       }}
     >
-      <View>
-        <Text>ヘッダー</Text>
-      </View>
-      <Button mode="contained">ログアウト</Button>
-      <Button mode="contained">消費期限通知　ON</Button>
-      <Button mode="contained">消費期限通知　OFF</Button>
+      <View>{/* 他のコンテンツ */}</View>
+      <PrimaryButton onPress={handleLogoutPress}>ログアウト</PrimaryButton>
+      <PrimaryButton onPress={handleToggleNotificationOnPress}>
+        消費期限通知　ON
+      </PrimaryButton>
+      <PrimaryButton onPress={handleToggleNotificationOffPress}>
+        消費期限通知　OFF
+      </PrimaryButton>
     </View>
   );
 });
