@@ -1,5 +1,5 @@
 import React, { useState, memo, useCallback, useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, LayoutChangeEvent } from "react-native";
 import {
   List,
   Appbar,
@@ -7,7 +7,10 @@ import {
   Button,
   TextInput,
   Portal,
+  PaperProvider,
 } from "react-native-paper";
+import { SwipeListView } from "react-native-swipe-list-view";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 import {
   collection,
@@ -24,6 +27,9 @@ import {
 import { db, auth } from "../firebase";
 
 import { useCategories } from "./components/useCategories";
+import { PrimaryButton } from "./components/PrimaryButton";
+import styles from "../style/Styles";
+import { themes } from "../style/themes";
 
 export type categoriesType = {
   id: string;
@@ -128,50 +134,89 @@ export const CategoryMenu = memo(() => {
   };
 
   return (
-    <>
-      <Appbar.Header>
+    <PaperProvider theme={themes}>
+      {/* <Appbar.Header>
         <Appbar.Content title="カテゴリ一覧" />
         <Appbar.Action icon="plus" onPress={() => setAddVisible(true)} />
-      </Appbar.Header>
-      <View>
-        <List.Section>
-          {categories.map((category) => (
-            <List.Item
-              key={category.id}
-              title={category.title}
-              onLongPress={() => showDialog(category)}
-              style={{ padding: 10 }}
-              // カテゴリ名変更用
-              // right={() => (
-              //   <TouchableOpacity onPress={() => showRenameDialog(category)}>
-              //     <List.Icon icon="square-edit-outline" color="#000" />
-              //   </TouchableOpacity>
-              // )}
-            />
-          ))}
-        </List.Section>
+      </Appbar.Header> */}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginHorizontal: 20,
+          marginBottom: 10,
+        }}
+      >
+        <Text style={{ fontSize: 20 }}>カテゴリ一覧</Text>
+        <Icon
+          name="create-new-folder"
+          size={30}
+          onPress={() => setAddVisible(true)}
+        />
+      </View>
+      <View style={{ flex: 1 }}>
+        <SwipeListView
+          data={categories}
+          renderItem={({ item }) => (
+            <List.Section
+              style={[
+                styles.stockRipple,
+                { height: 50, padding: 0, margin: 0 },
+              ]}
+            >
+              <List.Item
+                key={item.id}
+                title={item.title}
+                // onLongPress={() => showDialog(item)}
+                // style={{ padding: 10 }}
+                // カテゴリ名変更用
+                // right={() => (
+                //   <TouchableOpacity onPress={() => showRenameDialog(category)}>
+                //     <List.Icon icon="square-edit-outline" color="#000" />
+                //   </TouchableOpacity>
+                // )}
+                right={() => (
+                  <Icon name="chevron-right" size={24} color="gray" />
+                )}
+              />
+            </List.Section>
+          )}
+          renderHiddenItem={({ item }) => (
+            <View style={[styles.rowBack, { height: 50 }]}>
+              <TouchableOpacity
+                style={[styles.deleteButton, { maxHeight: 50 }]}
+                onPress={() => showDialog(item)}
+              >
+                <Text style={[styles.deleteButtonText]}>削除</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          leftOpenValue={0}
+          rightOpenValue={-75}
+          disableRightSwipe
+        />
       </View>
 
       {/* 削除ダイアログ */}
-      <Portal>
-        <Dialog visible={visible} onDismiss={hideDialog}>
-          <Dialog.Content>
-            <Text>{`カテゴリ「${selectedCategory?.title}」を削除しますか？ `}</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog}>キャンセル</Button>
-            <Button
-              onPress={() => {
-                if (selectedCategory) {
-                  deleteCategory(selectedCategory.id);
-                }
-              }}
-            >
-              削除する
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <Dialog visible={visible} onDismiss={hideDialog}>
+        <Dialog.Content>
+          <Text>{`カテゴリ「${selectedCategory?.title}」を削除しますか？ `}</Text>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <PrimaryButton onPress={hideDialog}>キャンセル</PrimaryButton>
+          <PrimaryButton
+            onPress={() => {
+              if (selectedCategory) {
+                deleteCategory(selectedCategory.id);
+                hideDialog();
+              }
+            }}
+          >
+            削除する
+          </PrimaryButton>
+        </Dialog.Actions>
+      </Dialog>
 
       {/* カテゴリ名変更ダイアログ
       <Dialog visible={renameVisible} onDismiss={hideRenameDialog}>
@@ -193,14 +238,15 @@ export const CategoryMenu = memo(() => {
             <TextInput
               value={categoryName}
               onChangeText={changeText}
+              placeholder="カテゴリ名を入力"
             ></TextInput>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={hideAddDialog}>キャンセル</Button>
-            <Button onPress={addCategory}>追加する</Button>
+            <PrimaryButton onPress={hideAddDialog}>キャンセル</PrimaryButton>
+            <PrimaryButton onPress={addCategory}>追加</PrimaryButton>
           </Dialog.Actions>
         </Dialog>
       </Portal>
-    </>
+    </PaperProvider>
   );
 });
