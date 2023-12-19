@@ -10,6 +10,7 @@ import {
   Button,
   Menu,
   IconButton,
+  PaperProvider,
 } from "react-native-paper";
 import {
   View,
@@ -45,6 +46,8 @@ import styles from "../style/Styles";
 import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
+import { PrimaryButton } from "./components/PrimaryButton";
+import { themes } from "../style/themes";
 // import themes from "../style/themes";
 
 const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
@@ -192,7 +195,7 @@ export const Stock = memo(() => {
   }, [selectedItem]);
 
   return (
-    <Provider>
+    <PaperProvider theme={themes}>
       <Appbar.Header style={{ backgroundColor: "#DDAF56" }}>
         {isSearchBarVisible ? (
           <Searchbar
@@ -206,8 +209,20 @@ export const Stock = memo(() => {
           />
         ) : (
           <>
-            <Appbar.Action icon="plus" onPress={showAddModal} />
-            <Appbar.Action icon="magnify" onPress={openSearchBar} />
+            {/* <Appbar.Action icon="plus" onPress={showAddModal} />
+            <Appbar.Action icon="magnify" onPress={openSearchBar} /> */}
+            <Icon
+              name="add-circle-outline"
+              size={30}
+              onPress={showAddModal}
+              style={styles.stockIcon}
+            />
+            <Icon
+              name="search"
+              size={30}
+              onPress={openSearchBar}
+              style={styles.stockIcon}
+            />
             <View style={{ flex: 1, justifyContent: "center" }}>
               <RNPickerSelect
                 onValueChange={(value) => setSelectedCategory(value)}
@@ -217,15 +232,20 @@ export const Stock = memo(() => {
                 value={selectedCategory}
               />
             </View>
-            <Appbar.Action icon="pencil" onPress={showCategoryModal} />
+            {/* <Appbar.Action icon="pencil" onPress={showCategoryModal} /> */}
+            <Icon
+              name="edit"
+              size={30}
+              onPress={showCategoryModal}
+              style={styles.stockIcon}
+            />
             <Menu
               visible={menuVisible}
               onDismiss={closeMenu}
-              anchor={<IconButton icon="sort" onPress={openMenu}></IconButton>}
+              anchor={<Icon name="sort" size={30} onPress={openMenu}></Icon>}
             >
               <Menu.Item onPress={sortbyDefault} title="デフォルト" />
               <Menu.Item onPress={sortbyExpiryDate} title="消費期限順" />
-              <Menu.Item onPress={() => {}} title="Item 3" />
             </Menu>
           </>
         )}
@@ -238,10 +258,12 @@ export const Stock = memo(() => {
           onDismiss={hideAddModal}
           contentContainerStyle={styles.stockContainer}
         >
-          <AddUpdateStock
-            hideModal={hideAddModal}
-            addIngredientCategory={addIngredientCategory}
-          />
+          <ScrollView style={{ maxHeight: "100%" }}>
+            <AddUpdateStock
+              hideModal={hideAddModal}
+              addIngredientCategory={addIngredientCategory}
+            />
+          </ScrollView>
         </Modal>
 
         {/* カテゴリ編集画面 */}
@@ -261,17 +283,19 @@ export const Stock = memo(() => {
           contentContainerStyle={styles.stockContainer}
         >
           {selectedItem && (
-            <EditStock
-              ingredient={selectedItem}
-              hideModal={hideEditModal}
-              addIngredientCategory={addIngredientCategory}
-            />
+            <ScrollView style={{ maxHeight: "100%" }}>
+              <EditStock
+                ingredient={selectedItem}
+                hideModal={hideEditModal}
+                addIngredientCategory={addIngredientCategory}
+              />
+            </ScrollView>
           )}
         </Modal>
 
         <Dialog visible={dialogVisible} onDismiss={hideItemDialog}>
           <Dialog.Title>{selectedItem?.ingredientName}</Dialog.Title>
-          <Dialog.Content>
+          <Dialog.Content style={styles.stockDialogContents}>
             <Text>
               消費期限:{" "}
               {selectedItem?.expiryDate
@@ -299,8 +323,8 @@ export const Stock = memo(() => {
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={handleEditIngredient}>編集</Button>
-            <Button onPress={hideItemDialog}>閉じる</Button>
+            <PrimaryButton onPress={handleEditIngredient}>編集</PrimaryButton>
+            <PrimaryButton onPress={hideItemDialog}>閉じる</PrimaryButton>
           </Dialog.Actions>
         </Dialog>
         {/* <AnimatedFAB
@@ -375,7 +399,7 @@ export const Stock = memo(() => {
           disableRightSwipe
         />
       </View>
-    </Provider>
+    </PaperProvider>
   );
 });
 
