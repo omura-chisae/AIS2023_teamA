@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, FlatList } from "react-native";
 import axios from "axios";
 import { useRecipeInfo } from "../../../RecipeInfoContext";
-import { API_KEY } from "@env";
+import { OPENAI_API_KEY } from "@env";
 
 interface Message {
   role: string;
@@ -13,7 +13,7 @@ interface Message {
 const OpenAI = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const APIKey = API_KEY;
+  const APIKey = OPENAI_API_KEY;
   const model = "gpt-3.5-turbo-0301";
   console.log(APIKey);
 
@@ -94,7 +94,7 @@ const OpenAI = () => {
                   maxWidth: "80%",
                 }}
               >
-                <Text　style={{fontSize:20}}>{item.content}</Text>
+                <Text style={{ fontSize: 20 }}>{item.content}</Text>
               </View>
             )}
           </View>

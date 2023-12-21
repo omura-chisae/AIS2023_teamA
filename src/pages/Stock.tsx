@@ -407,17 +407,23 @@ export const Stock = memo(() => {
           )}
         </Modal>
 
-        <Dialog visible={dialogVisible} onDismiss={hideItemDialog}>
-          <Dialog.Title>{selectedItem?.ingredientName}</Dialog.Title>
+        <Dialog
+          visible={dialogVisible}
+          onDismiss={hideItemDialog}
+          style={{ backgroundColor: "white" }}
+        >
+          <Dialog.Title style={{ fontSize: 30 }}>
+            {selectedItem?.ingredientName}
+          </Dialog.Title>
           <Dialog.Content>
-            <Text>
+            <Text style={{ fontSize: 20 }}>
               消費期限:{" "}
               {selectedItem?.expiryDate
                 ? displayDateInJapanese(selectedItem.expiryDate)
                 : "日付なし"}
             </Text>
-            <Text>数量: {selectedItem?.quantity}</Text>
-            <Text>
+            <Text style={{ fontSize: 20 }}>数量: {selectedItem?.quantity}</Text>
+            <Text style={{ fontSize: 20 }}>
               カテゴリー:{" "}
               {selectedItem?.categories
                 .map((categoryItem) => {
@@ -431,8 +437,8 @@ export const Stock = memo(() => {
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <PrimaryButton onPress={handleEditIngredient}>編集</PrimaryButton>
-            <PrimaryButton onPress={hideItemDialog}>閉じる</PrimaryButton>
+            <Button onPress={handleEditIngredient}>編集</Button>
+            <Button onPress={hideItemDialog}>閉じる</Button>
           </Dialog.Actions>
         </Dialog>
         {renderFAB()}

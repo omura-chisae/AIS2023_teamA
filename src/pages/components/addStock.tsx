@@ -15,14 +15,14 @@ const addStock: React.FC<addStockProps> = memo((props) => {
   return (
     <>
       <TextInput
+        label="食材名"
         onChangeText={changeIngredientName}
-        placeholder="食材名を入力"
+        style={{ color: "#DDAF56" }}
       />
-
       <List.Section>
         <List.Accordion
           title="カテゴリを選択"
-          left={(props) => <List.Icon {...props} icon="folder" />}
+          left={(props) => <List.Icon {...props} icon="plus" />}
         >
           {categoryLists.map((item: itemProps) => (
             <List.Item
