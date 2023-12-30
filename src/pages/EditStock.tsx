@@ -46,7 +46,7 @@ export const EditStock: React.FC<EditStockProps> = ({
         ingredientName,
         categories: categoryLists
           .filter((item) => item.checked)
-          .map((item) => item.id),
+          .map((item) => ({ id: item.id })),
         expiryDate: date,
         quantity,
       });

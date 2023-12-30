@@ -8,6 +8,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 16,
   },
+  AuthbuttonContainer: {
+    flexDirection: "row", // 水平方向に並べる
+    justifyContent: "space-evenly", // ボタン間に均等なスペースを作る
+    marginTop: 10, // 上部のマージン（適宜調整してください）
+  },
   authInput: {
     marginBottom: 10,
   },

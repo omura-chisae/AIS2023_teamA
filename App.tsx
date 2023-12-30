@@ -8,6 +8,7 @@ import { PaperProvider } from "react-native-paper";
 import AuthContext from "./src/AuthContext";
 import { themes } from "./src/style/themes";
 import { RecipeInfoProvider } from "./src/RecipeInfoProvider";
+import { FabProvider } from "./src/FabContext";
 
 type UserType = User | null;
 
@@ -28,11 +29,13 @@ function App() {
 
   return (
     <PaperProvider theme={themes}>
-      <RecipeInfoProvider>
-        <NavigationContainer>
-          <AuthContext user={user} />
-        </NavigationContainer>
-      </RecipeInfoProvider>
+      <FabProvider>
+        <RecipeInfoProvider>
+          <NavigationContainer>
+            <AuthContext user={user} />
+          </NavigationContainer>
+        </RecipeInfoProvider>
+      </FabProvider>
     </PaperProvider>
   );
 }

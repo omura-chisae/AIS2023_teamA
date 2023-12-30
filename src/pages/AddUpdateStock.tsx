@@ -15,7 +15,7 @@ import { PrimaryButton } from "./components/PrimaryButton";
 import Styles from "../style/Styles";
 
 // Firestoreに食材データを追加
-const addIngredient = (
+const addIngredient = async (
   name: string,
   categoryLists: itemProps[],
   date: Date,
@@ -28,14 +28,19 @@ const addIngredient = (
   const user = auth.currentUser;
   if (user) {
     const userId = user.uid;
-
-    addDoc(collection(db, "ingredients"), {
-      userId: userId,
-      ingredientName: name,
-      categories: checkedCategories,
-      expiryDate: date,
-      quantity: quantity,
-    });
+    try {
+      await addDoc(collection(db, "ingredients"), {
+        userId: userId,
+        ingredientName: name,
+        categories: checkedCategories,
+        expiryDate: date,
+        quantity: quantity,
+      });
+      // 追加が成功したら何かしらの処理
+    } catch (error) {
+      // エラー処理
+      console.error("Error adding ingredient:", error);
+    }
   }
 };
 
@@ -47,14 +52,7 @@ type addUpdateStockProps = {
 
 export const AddUpdateStock: React.FC<addUpdateStockProps> = memo((props) => {
   const { hideModal, onAdd, addIngredientCategory } = props;
-
-  const handleAddClick = async () => {
-    await addIngredient(ingredientName, categoryLists, date, quantity);
-    hideModal();
-    if (onAdd) {
-      onAdd(); //新しい食材が追加された後にリストを更新
-    }
-  };
+  const [isAdding, setIsAdding] = useState(false);
 
   // AddStock
   const [ingredientName, setIngredientName] = useState("");
@@ -95,6 +93,20 @@ export const AddUpdateStock: React.FC<addUpdateStockProps> = memo((props) => {
     []
   );
 
+  const handleAddClick = async () => {
+    // 追加処理が完了するまでボタンを無効化するための状態
+
+    if (!isAdding) {
+      setIsAdding(true);
+      await addIngredient(ingredientName, categoryLists, date, quantity);
+      setIsAdding(false);
+      hideModal();
+      if (onAdd) {
+        onAdd();
+      }
+    }
+  };
+
   return (
     <View style={Styles.AddUpdateStockcontainer}>
       <AddStock
@@ -108,10 +120,13 @@ export const AddUpdateStock: React.FC<addUpdateStockProps> = memo((props) => {
         countDown={countDown}
         quantity={quantity}
       />
-      <PrimaryButton onPress={() => {
-          addIngredient(ingredientName, categoryLists, date, quantity);
-          hideModal();
-        }}>追加</PrimaryButton>
+      <Button
+        mode="contained"
+        onPress={handleAddClick}
+        disabled={isAdding} // 追加中はボタンを無効化
+      >
+        {isAdding ? "追加中..." : "追加"}
+      </Button>
     </View>
   );
 });

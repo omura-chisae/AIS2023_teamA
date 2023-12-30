@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import { memo, useState, useEffect } from "react";
 import { View } from "react-native";
 import { PrimaryButton } from "./components/PrimaryButton";
 
@@ -24,7 +24,6 @@ export const Settings = memo(() => {
         backgroundColor: "#F8F9F9",
       }}
     >
-      <View>{/* 他のコンテンツ */}</View>
       <PrimaryButton onPress={handleLogoutPress}>ログアウト</PrimaryButton>
       <PrimaryButton onPress={handleToggleNotificationOnPress}>
         消費期限通知　ON

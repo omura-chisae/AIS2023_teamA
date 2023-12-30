@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { memo } from "react";
 import { Alert, ScrollView, View } from "react-native";
 import {
@@ -152,7 +152,14 @@ export const SearchRecipes = memo(() => {
       <Appbar.Header style={{ backgroundColor: "#DDAF56" }}>
         <Text style={styles.searchRecipeHeader}>レシピ提案</Text>
       </Appbar.Header>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          marginBottom: 30,
+        }}
+      >
         <ScrollView style={{ flex: 1, width: "100%" }}>
           <Text style={{ fontSize: 20, marginBottom: 10, marginTop: 10 }}>
             種類
