@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { memo } from "react";
 import { Alert, ScrollView, View } from "react-native";
-import { Button, Checkbox, RadioButton, Text } from "react-native-paper";
+import {
+  Appbar,
+  Button,
+  Checkbox,
+  RadioButton,
+  Text,
+} from "react-native-paper";
 
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
 import { useRecipeInfo } from "../RecipeInfoContext";
 
 import { PrimaryButton } from "../pages/components/PrimaryButton";
 import { useNavigation } from "@react-navigation/native";
+import styles from "../style/Styles";
 
 export const SearchRecipes = memo(() => {
   const userIngredients = useUserIngredients();
@@ -141,127 +148,132 @@ export const SearchRecipes = memo(() => {
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginBottom: 30,
-      }}
-    >
-      <ScrollView style={{ flex: 1, width: "100%" }}>
-        <Text style={{ fontSize: 20, marginBottom: 10, marginTop: 10 }}>
-          種類
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            flexWrap: "wrap",
-            borderBottomWidth: 1,
-            borderBottomColor: "#DDAF56",
-            marginLeft: 10,
-            marginRight: 10,
-          }}
-        >
-          {kinds.map((item, index) => (
-            <View
-              key={index}
-              style={{ width: `${100 / buttonsPerRow}%`, marginBottom: 10 }}
-            >
-              <RadioButton.Item
-                label={item.title}
-                status={item.select ? "checked" : "unchecked"}
-                onPress={() => handleRadioChange(index, "種類")}
-                value={item.title}
-                color="#DDAF56"
-              />
-            </View>
-          ))}
-        </View>
+    <>
+      <Appbar.Header style={{ backgroundColor: "#DDAF56" }}>
+        <Text style={styles.searchRecipeHeader}>レシピ提案</Text>
+      </Appbar.Header>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          marginBottom: 30,
+        }}
+      >
+        <ScrollView style={{ flex: 1, width: "100%" }}>
+          <Text style={{ fontSize: 20, marginBottom: 10, marginTop: 10 }}>
+            種類
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              flexWrap: "wrap",
+              borderBottomWidth: 1,
+              borderBottomColor: "#DDAF56",
+              marginLeft: 10,
+              marginRight: 10,
+            }}
+          >
+            {kinds.map((item, index) => (
+              <View
+                key={index}
+                style={{ width: `${100 / buttonsPerRow}%`, marginBottom: 10 }}
+              >
+                <RadioButton.Item
+                  label={item.title}
+                  status={item.select ? "checked" : "unchecked"}
+                  onPress={() => handleRadioChange(index, "種類")}
+                  value={item.title}
+                  color="#DDAF56"
+                />
+              </View>
+            ))}
+          </View>
 
-        <Text style={{ fontSize: 20, marginBottom: 10, marginTop: 10 }}>
-          ジャンル
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            flexWrap: "wrap",
-            borderBottomWidth: 1,
-            borderBottomColor: "#DDAF56",
-            marginLeft: 10,
-            marginRight: 10,
-          }}
-        >
-          {genre.map((item, index) => (
-            <View
-              key={index}
-              style={{ width: `${100 / buttonsPerRow}%`, marginBottom: 10 }}
-            >
-              <RadioButton.Item
-                label={item.title}
-                status={item.select ? "checked" : "unchecked"}
-                onPress={() => handleRadioChange(index, "ジャンル")}
-                value={item.title}
-                color="#DDAF56"
-                labelStyle={{ fontSize: 16, marginLeft: -10 }}
-                style={{ marginBottom: 5 }}
-              />
-            </View>
-          ))}
-        </View>
-        <Text style={{ fontSize: 20, marginBottom: 10, marginTop: 10 }}>
-          食材
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "center",
-            borderBottomWidth: 1,
-            borderBottomColor: "#DDAF56",
-            marginLeft: 10,
-            marginRight: 10,
-          }}
-        >
-          {ingredients.map((item, index) => (
-            <View
-              key={index}
-              style={{
-                width: `${100 / buttonsPerRow}%`,
-                marginBottom: 10,
-                margin: 4,
-              }}
-            >
-              <Checkbox.Item
-                label={item.title}
-                status={item.select ? "checked" : "unchecked"}
-                onPress={() => handleCheckboxChange(index, "食材")}
-                color="#DDAF56"
-              />
-            </View>
-          ))}
-        </View>
+          <Text style={{ fontSize: 20, marginBottom: 10, marginTop: 10 }}>
+            ジャンル
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              flexWrap: "wrap",
+              borderBottomWidth: 1,
+              borderBottomColor: "#DDAF56",
+              marginLeft: 10,
+              marginRight: 10,
+            }}
+          >
+            {genre.map((item, index) => (
+              <View
+                key={index}
+                style={{ width: `${100 / buttonsPerRow}%`, marginBottom: 10 }}
+              >
+                <RadioButton.Item
+                  label={item.title}
+                  status={item.select ? "checked" : "unchecked"}
+                  onPress={() => handleRadioChange(index, "ジャンル")}
+                  value={item.title}
+                  color="#DDAF56"
+                  labelStyle={{ fontSize: 16, marginLeft: -10 }}
+                  style={{ marginBottom: 5 }}
+                />
+              </View>
+            ))}
+          </View>
+          <Text style={{ fontSize: 20, marginBottom: 10, marginTop: 10 }}>
+            食材
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              alignItems: "center",
+              borderBottomWidth: 1,
+              borderBottomColor: "#DDAF56",
+              marginLeft: 10,
+              marginRight: 10,
+            }}
+          >
+            {ingredients.map((item, index) => (
+              <View
+                key={index}
+                style={{
+                  width: `${100 / buttonsPerRow}%`,
+                  marginBottom: 10,
+                  margin: 4,
+                }}
+              >
+                <Checkbox.Item
+                  label={item.title}
+                  status={item.select ? "checked" : "unchecked"}
+                  onPress={() => handleCheckboxChange(index, "食材")}
+                  color="#DDAF56"
+                />
+              </View>
+            ))}
+          </View>
 
-        <Text style={{ fontSize: 20, marginBottom: 10, marginTop: 10 }}>
-          時間
-        </Text>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          {times.map((item, index) => (
-            <View key={index}>
-              <Checkbox.Item
-                label={item.title}
-                status={item.select ? "checked" : "unchecked"}
-                onPress={() => handleCheckboxChange(index, "時間")}
-                color="#DDAF56"
-              />
-            </View>
-          ))}
-        </View>
+          <Text style={{ fontSize: 20, marginBottom: 10, marginTop: 10 }}>
+            時間
+          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {times.map((item, index) => (
+              <View key={index}>
+                <Checkbox.Item
+                  label={item.title}
+                  status={item.select ? "checked" : "unchecked"}
+                  onPress={() => handleCheckboxChange(index, "時間")}
+                  color="#DDAF56"
+                />
+              </View>
+            ))}
+          </View>
 
-        <PrimaryButton onPress={showIngredients}>提案</PrimaryButton>
-      </ScrollView>
-    </View>
+          <PrimaryButton onPress={showIngredients}>提案</PrimaryButton>
+        </ScrollView>
+      </View>
+    </>
   );
 });

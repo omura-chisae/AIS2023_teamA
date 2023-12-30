@@ -12,6 +12,8 @@ import { itemProps } from "./components/addStock";
 import { useCategories } from "./components/useCategories";
 import { PrimaryButton } from "./components/PrimaryButton";
 
+import Styles from "../style/Styles";
+
 // Firestoreに食材データを追加
 const addIngredient = async (
   name: string,
@@ -106,7 +108,7 @@ export const AddUpdateStock: React.FC<addUpdateStockProps> = memo((props) => {
   };
 
   return (
-    <View>
+    <View style={Styles.AddUpdateStockcontainer}>
       <AddStock
         changeIngredientName={changeIngredientName}
         handleCheckboxToggle={handleCheckboxToggle}

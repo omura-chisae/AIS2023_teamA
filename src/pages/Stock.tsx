@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  memo,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
+import { useState, useEffect, memo, useCallback, useMemo, useRef } from "react";
 import {
   Modal,
   Portal,
@@ -17,6 +10,9 @@ import {
   Button,
   FAB,
   AnimatedFAB as NativeAnimatedFAB,
+  Menu,
+  IconButton,
+  PaperProvider,
 } from "react-native-paper";
 import {
   View,
@@ -28,12 +24,13 @@ import {
   Pressable,
   Dimensions,
   Platform,
+  ScrollView,
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { Menu, IconButton } from "react-native-paper";
+
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 import { SwipeListView } from "react-native-swipe-list-view";
@@ -45,8 +42,9 @@ import styles from "../style/Styles";
 import { CategoryMenu } from "./CategoryMenu";
 import { useCategories } from "./components/useCategories";
 import { useUserIngredients } from "./CustomHook/useUserIngredients";
-import { themes } from "../style/themes";
+
 import { PrimaryButton } from "./components/PrimaryButton";
+import { themes } from "../style/themes";
 import { useFabContext } from "../FabContext";
 
 const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
@@ -82,6 +80,11 @@ export const Stock = memo(() => {
   // const showCategoryModal = useCallback(() => setCategoryVisible(true), []);
   const hideCategoryModal = useCallback(() => setCategoryVisible(false), []);
   const [categoryVisible, setCategoryVisible] = useState(false);
+
+  // RNPickerSelectでフィルターした食材リストを保存する変数
+  const [filteredIngredients, setFilteredIngredients] = useState(ingredients);
+  // ソートした食材リストを保存する変数
+  const [sortedIngredients, setSortedIngredients] = useState(ingredients);
 
   // カテゴリを取得
   const fetchedCategories = useCategories();
@@ -302,9 +305,37 @@ export const Stock = memo(() => {
     }
     // FABがdisabledの場合、何もしない
   };
+  // 並び替えメニュー用
+  const [menuVisible, setMenuVisible] = useState(false);
+  const closeMenu = () => setMenuVisible(false);
+  const openMenu = () => setMenuVisible(true);
+
+  const sortbyDefault = () => {
+    // 元の順番（filteredIngredients）を代入
+    setSortedIngredients(filteredIngredients);
+    setMenuVisible(false);
+  };
+
+  const sortbyExpiryDate = () => {
+    // 消費期限順に並び変える
+    const updatedIngredients = Array.from(filteredIngredients);
+    updatedIngredients.sort((a, b) => {
+      const expiryDateA =
+        a.expiryDate instanceof Date ? a.expiryDate.getTime() : 0;
+      const expiryDateB =
+        b.expiryDate instanceof Date ? b.expiryDate.getTime() : 0;
+      return expiryDateA - expiryDateB;
+    });
+    setSortedIngredients(updatedIngredients);
+    setMenuVisible(false);
+  };
+
+  useEffect(() => {
+    console.log("選択された食材のカテゴリIDリスト:", selectedItem?.categories);
+  }, [selectedItem]);
 
   return (
-    <Provider>
+    <PaperProvider theme={themes}>
       <Appbar.Header style={{ backgroundColor: "#DDAF56" }}>
         {isSearchBarVisible ? (
           <Searchbar
@@ -376,10 +407,12 @@ export const Stock = memo(() => {
           onDismiss={hideAddModal}
           contentContainerStyle={styles.stockContainer}
         >
-          <AddUpdateStock
-            hideModal={hideAddModal}
-            addIngredientCategory={addIngredientCategory}
-          />
+          <ScrollView style={{ maxHeight: "100%" }}>
+            <AddUpdateStock
+              hideModal={hideAddModal}
+              addIngredientCategory={addIngredientCategory}
+            />
+          </ScrollView>
         </Modal>
 
         {/* カテゴリ編集画面 */}
@@ -388,8 +421,8 @@ export const Stock = memo(() => {
           onDismiss={hideCategoryModal}
           contentContainerStyle={styles.stockContainer}
         >
-          <Button onPress={hideCategoryModal}>閉じる</Button>
           <CategoryMenu />
+          <Button onPress={hideCategoryModal}>閉じる</Button>
         </Modal>
 
         {/* 編集用モーダル */}
@@ -399,17 +432,19 @@ export const Stock = memo(() => {
           contentContainerStyle={styles.stockContainer}
         >
           {selectedItem && (
-            <EditStock
-              ingredient={selectedItem}
-              hideModal={hideEditModal}
-              addIngredientCategory={addIngredientCategory}
-            />
+            <ScrollView style={{ maxHeight: "100%" }}>
+              <EditStock
+                ingredient={selectedItem}
+                hideModal={hideEditModal}
+                addIngredientCategory={addIngredientCategory}
+              />
+            </ScrollView>
           )}
         </Modal>
 
         <Dialog visible={dialogVisible} onDismiss={hideItemDialog}>
           <Dialog.Title>{selectedItem?.ingredientName}</Dialog.Title>
-          <Dialog.Content>
+          <Dialog.Content style={styles.stockDialogContents}>
             <Text>
               消費期限:{" "}
               {selectedItem?.expiryDate
@@ -494,7 +529,7 @@ export const Stock = memo(() => {
           disableRightSwipe
         />
       </View>
-    </Provider>
+    </PaperProvider>
   );
 });
 
